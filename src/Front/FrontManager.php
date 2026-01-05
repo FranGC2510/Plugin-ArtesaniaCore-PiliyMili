@@ -20,6 +20,9 @@ class FrontManager {
 
         // 3. SHORTCODE DE OFERTAS (Portada)
         add_shortcode( 'seccion_ofertas', [ $this, 'mostrar_ofertas_inteligentes' ] );
+
+        // 4. SHORTCODE DE NOVEDADES (Portada)
+        add_shortcode( 'seccion_novedades', [ $this, 'mostrar_novedades_estilizadas' ] );
     }
 
     /**
@@ -63,17 +66,33 @@ class FrontManager {
      * Lógica de Ofertas (Portada)
      */
     public function mostrar_ofertas_inteligentes() {
-        // Si WooCommerce no está activo o no hay funciones de venta, salimos
         if ( ! function_exists( 'wc_get_product_ids_on_sale' ) ) return '';
 
         $ofertas = wc_get_product_ids_on_sale();
 
         if ( ! empty( $ofertas ) ) {
-            $html  = '<h2 class="wp-block-heading" style="text-align:center; text-transform:uppercase; letter-spacing:3px; margin-top:0px; margin-bottom:30px; font-size:24px;">PRODUCTOS REBAJADOS</h2>';
+            $estilo_titulo = 'text-align:center; text-transform:none; font-weight:300; margin-top:0px; margin-bottom:20px; font-size:34px; color:#000000; line-height: 1.2;';
+
+            $html  = '<h2 class="wp-block-heading" style="' . $estilo_titulo . '">Productos rebajados</h2>';
             $html .= do_shortcode('[sale_products limit="4" columns="4"]');
 
             return '<div style="max-width: 1000px; margin-left: auto; margin-right: auto;">' . $html . '</div>';
         }
         return '';
     }
+
+    /**
+     * Lógica de Novedades (Para que sea gemela a Ofertas)
+     * Shortcode: [seccion_novedades]
+     */
+    public function mostrar_novedades_estilizadas() {
+            // Usamos la misma variable de estilo para que sean gemelos
+            $estilo_titulo = 'text-align:center; text-transform:none; font-weight:300; margin-top:60px; margin-bottom:20px; font-size:34px; color:#000000; line-height: 1.2;';
+
+            $html  = '<h2 class="wp-block-heading" style="' . $estilo_titulo . '">Novedades</h2>';
+            $html .= do_shortcode('[products limit="4" columns="4" orderby="date" order="DESC"]');
+
+            // Margen inferior para separar del pie de página
+            return '<div style="max-width: 1000px; margin-left: auto; margin-right: auto; margin-bottom: 50px;">' . $html . '</div>';
+       }
 }
