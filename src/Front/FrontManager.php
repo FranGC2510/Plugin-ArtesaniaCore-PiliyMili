@@ -50,7 +50,7 @@ class FrontManager {
     public function cabeceras_tienda() {
         if ( is_shop() ) {
             // A. TÍTULO Y REJILLA DE COLECCIONES
-            echo '<h2 class="wp-block-heading" style="text-align:center; text-transform:uppercase; letter-spacing:3px; margin-top:10px; margin-bottom:30px; font-size:24px;">COLECCIONES</h2>';
+            echo '<h2 class="wp-block-heading" style="text-align:center; text-transform:uppercase; letter-spacing:3px; margin-top:0px; margin-bottom:30px; font-size:24px;">COLECCIONES</h2>';
 
             echo do_shortcode('[product_categories limit="6" columns="3" parent="0"]');
 
@@ -69,8 +69,8 @@ class FrontManager {
         $ofertas = wc_get_product_ids_on_sale();
 
         if ( ! empty( $ofertas ) ) {
-            $html  = '<h2 class="wp-block-heading" style="text-align:center; text-transform:uppercase; letter-spacing:3px; margin-top:50px; margin-bottom:30px; font-size:24px;">PRODUCTOS REBAJADOS</h2>';
-            $html .= do_shortcode('[sale_products limit="3" columns="3"]');
+            $html  = '<h2 class="wp-block-heading" style="text-align:center; text-transform:uppercase; letter-spacing:3px; margin-top:0px; margin-bottom:30px; font-size:24px;">PRODUCTOS REBAJADOS</h2>';
+            $html .= do_shortcode('[sale_products limit="4" columns="4"]');
 
             return '<div style="max-width: 1000px; margin-left: auto; margin-right: auto;">' . $html . '</div>';
         }
