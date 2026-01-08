@@ -48,19 +48,53 @@ class FrontManager {
     }
 
     /**
-     * Lógica de Cabeceras en Tienda
-     */
-    public function cabeceras_tienda() {
-        if ( is_shop() ) {
-            // A. TÍTULO Y REJILLA DE COLECCIONES
-            echo '<h2 class="wp-block-heading" style="text-align:center; text-transform:uppercase; letter-spacing:3px; margin-top:0px; margin-bottom:30px; font-size:24px;">COLECCIONES</h2>';
+         * Lógica de Cabeceras en Tienda y Categorías
+         */
+        public function cabeceras_tienda() {
 
-            echo do_shortcode('[product_categories limit="6" columns="3" parent="0"]');
+            // ESTILO COMÚN PARA LOS TÍTULOS (Copiado de tus preferencias anteriores)
+            $estilo_titulo_arriba = 'text-align:center; text-transform:none; font-weight:300; margin-top:0px; margin-bottom:30px; font-size:34px; color:#000000; line-height:1.2;';
+            $estilo_titulo_abajo  = 'text-align:center; text-transform:none; font-weight:300; margin-top:60px; margin-bottom:20px; font-size:34px; border-top:1px solid #e6e6e6; padding-top:50px; color:#000000; line-height:1.2;';
 
-            // B. TÍTULO DE TODOS LOS PRODUCTOS
-            echo '<h2 class="wp-block-heading" style="text-align:center; text-transform:uppercase; letter-spacing:3px; margin-top:60px; margin-bottom:20px; font-size:24px; border-top:1px solid #e6e6e6; padding-top:50px;">TODOS LOS PRODUCTOS</h2>';
+            // --- CASO 1: TIENDA PRINCIPAL ---
+            if ( is_shop() ) {
+                // A. TÍTULO COLECCIONES
+                echo '<h2 class="wp-block-heading" style="' . $estilo_titulo_arriba . '">Colecciones</h2>';
+
+                // Muestra solo las categorías PADRE (parent="0")
+                echo do_shortcode('[product_categories limit="6" columns="3" parent="0"]');
+
+                // B. TÍTULO TODOS LOS PRODUCTOS
+                echo '<h2 class="wp-block-heading" style="' . $estilo_titulo_abajo . '">Todos los productos</h2>';
+            }
+
+            // --- CASO 2: DENTRO DE UNA CATEGORÍA (Ej: Eventos, Hogar...) ---
+            elseif ( is_product_category() ) {
+
+                // 1. Obtenemos la categoría actual
+                $objeto_actual = get_queried_object();
+                $id_actual     = $objeto_actual->term_id;
+                $nombre_cat    = $objeto_actual->name;
+
+                // 2. Comprobamos si tiene subcategorías hijas
+                $hijas = get_terms( 'product_cat', array(
+                    'parent'     => $id_actual,
+                    'hide_empty' => false
+                ) );
+
+                // 3. SI TIENE HIJAS -> Las mostramos arriba
+                if ( ! empty( $hijas ) ) {
+                    // Título dinámico: "EXPLORA [NOMBRE CATEGORÍA]"
+                    echo '<h2 class="wp-block-heading" style="' . $estilo_titulo_arriba . '">Explora ' . esc_html( $nombre_cat ) . '</h2>';
+
+                    // Shortcode mágico: muestra las categorías hijas de la actual
+                    echo do_shortcode('[product_categories limit="6" columns="3" parent="' . $id_actual . '"]');
+
+                    // Título separador para los productos
+                    echo '<h2 class="wp-block-heading" style="' . $estilo_titulo_abajo . '">Productos</h2>';
+                }
+            }
         }
-    }
 
     /**
      * Lógica de Ofertas (Portada)
