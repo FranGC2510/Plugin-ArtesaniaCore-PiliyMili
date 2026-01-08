@@ -71,12 +71,71 @@ class AssetsManager {
 
                 /* 4. MENÚ MÓVIL */
                 button.menu-toggle {
-                    display: block !important; width: calc(100% + 40px) !important; background-color: #ffffff !important; color: #000000 !important;
-                    font-weight: 800 !important; text-transform: uppercase !important; border: none !important; border-bottom: 1px solid #e6e6e6 !important;
-                    text-align: center !important; padding: 15px 0 !important; margin: 0 !important; margin-left: -20px !important; margin-right: -20px !important;
+                    position: absolute !important;
+                    top: 25px !important;       /* Alineado verticalmente */
+                    right: 20px !important;     /* A la derecha */
+                    left: auto !important;
+
+                    /* FORMA DE CÍRCULO PERFECTO */
+                    width: 45px !important;
+                    height: 45px !important;
+                    border-radius: 50% !important;
+
+                    /* ESTILO CONTENEDOR (Para que resalte al bajar) */
+                    background-color: #ffffff !important;        /* Fondo blanco */
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important; /* Sombra suave (elevación) */
+                    border: 1px solid rgba(0,0,0,0.05) !important;      /* Borde muy sutil */
+                    color: #000000 !important;
+
+                    /* Limpieza de texto antiguo */
+                    color: transparent !important; /* Texto invisible */
+                    font-size: 0 !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    z-index: 100 !important;
                 }
-                .handheld-navigation { background-color: #ffffff !important; padding: 0 !important; border-bottom: 1px solid #e6e6e6 !important; width: calc(100% + 40px) !important; margin-left: -20px !important; margin-right: -20px !important; }
-                .handheld-navigation ul.menu li a { color: #000000 !important; padding: 15px 20px !important; border-bottom: 1px solid #f0f0f0 !important; font-size: 14px !important; font-weight: 600 !important; }
+
+                /* ¡IMPORTANTE! Ocultamos cualquier contenido interno que ponga el tema */
+                button.menu-toggle span,
+                button.menu-toggle::after {
+                    display: none !important;
+                }
+
+                /* DIBUJO DE LAS 3 RAYAS (HAMBURGUESA) */
+                button.menu-toggle::before {
+                    content: "" !important;
+                    display: block !important;
+
+                    /* La línea central */
+                    width: 20px !important;  /* Ancho de la raya */
+                    height: 2px !important;  /* Grosor de la raya */
+                    background-color: #000000 !important;
+                    border-radius: 1px !important;
+
+                    /* Posicionamiento Absoluto al Centro */
+                    position: absolute !important;
+                    top: 50% !important;
+                    left: 50% !important;
+                    transform: translate(-50%, -50%) !important;
+
+                    /* Las líneas de arriba y abajo (usando sombras sólidas) */
+                    box-shadow:
+                        0 -6px 0 0 #000000, /* Raya de arriba */
+                        0 6px 0 0 #000000 !important; /* Raya de abajo */
+
+                    margin: 0 !important;
+                }
+
+                .handheld-navigation {
+                    background-color: #ffffff !important; padding: 0 !important; border-bottom: 1px solid #e6e6e6 !important;
+                    width: calc(100% + 40px) !important; margin-left: -20px !important; margin-right: -20px !important;
+                    margin-top: 20px !important;
+                }
+
+                .handheld-navigation ul.menu li a {
+                    color: #000000 !important; padding: 15px 20px !important; border-bottom: 1px solid #f0f0f0 !important;
+                    font-size: 14px !important; font-weight: 600 !important;
+                }
                 .storefront-handheld-footer-bar ul li.my-account { display: none !important; }
                 .storefront-handheld-footer-bar ul li.search, .storefront-handheld-footer-bar ul li.cart { width: 50% !important; display: inline-block !important; float: left !important; }
 
