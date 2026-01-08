@@ -70,7 +70,7 @@ class FrontManager {
         // CASO 1: Página Principal de Tienda
         if ( is_shop() ) {
             echo '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_TOP . '">Colecciones</h2>';
-            echo do_shortcode('[product_categories limit="6" columns="3" parent="0"]');
+            echo do_shortcode('[product_categories limit="6" columns="6" parent="0"]');
             echo '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_BOTTOM . '">Todos los productos</h2>';
             return;
         }
@@ -88,7 +88,7 @@ class FrontManager {
             // Solo mostramos el bloque "Explora" si hay subcategorías
             if ( ! empty( $children ) ) {
                 echo '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_TOP . '">Explora ' . esc_html( $obj->name ) . '</h2>';
-                echo do_shortcode('[product_categories limit="6" columns="3" parent="' . esc_attr( (string)$obj->term_id ) . '"]');
+                echo do_shortcode('[product_categories limit="6" columns="6" parent="' . esc_attr( (string)$obj->term_id ) . '"]');
                 echo '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_BOTTOM . '">Productos</h2>';
             }
             // Si es categoría final, no mostramos nada extra (para evitar redundancia con el título H1)
@@ -105,7 +105,7 @@ class FrontManager {
         if ( empty( $sale_ids ) ) return '';
 
         $html  = '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_TOP . ' margin-bottom:20px;">Productos rebajados</h2>';
-        $html .= do_shortcode('[sale_products limit="4" columns="4"]');
+        $html .= do_shortcode('[sale_products limit="5" columns="5"]');
 
         return '<div style="max-width: 1000px; margin: 0 auto;">' . $html . '</div>';
     }
@@ -118,7 +118,7 @@ class FrontManager {
         $style = str_replace( 'margin-top:0px', 'margin-top:60px', self::STYLE_TITLE_TOP );
 
         $html  = '<h2 class="wp-block-heading" style="' . $style . ' margin-bottom:20px;">Novedades</h2>';
-        $html .= do_shortcode('[products limit="4" columns="4" orderby="date" order="DESC"]');
+        $html .= do_shortcode('[products limit="5" columns="5" orderby="date" order="DESC"]');
 
         return '<div style="max-width: 1000px; margin: 0 auto; margin-bottom: 50px;">' . $html . '</div>';
     }
