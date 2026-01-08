@@ -71,31 +71,23 @@ class AssetsManager {
 
                 ul.products::before, ul.products::after { content: none !important; display: none !important; }
 
-                /* --- AQUÍ ESTÁ EL CAMBIO PARA IGUALAR ALTURAS --- */
+                /* --- ESTRUCTURA DE LA TARJETA --- */
                 ul.products li.product, .home .entry-content ul.products li.product {
                     width: 100% !important;
                     float: none !important;
                     margin: 0 !important;
                     clear: none !important;
-
-                    /* Convertimos la tarjeta en una columna flexible */
                     display: flex !important;
                     flex-direction: column !important;
-                    height: 100% !important; /* Se estira al alto de la fila */
+                    height: 100% !important;
                 }
 
-                ul.products li.product h2.woocommerce-loop-product__title,
-                ul.products li.product .woocommerce-loop-category__title {
-                    font-size: 14px !important;
-                    line-height: 1.3 !important;
-                    padding-top: 5px !important;
-                    min-height: 0 !important;
-                    /* Opcional: Si quieres limitar el título a 2 líneas siempre, descomenta esto:
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    */
+                /* --- ESTRUCTURA INTERNA DEL ENLACE (Imagen + Título + Precio) --- */
+                /* Hacemos que el enlace ocupe todo el hueco hasta el botón */
+                ul.products li.product a.woocommerce-LoopProduct-link {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    flex-grow: 1 !important; /* Ocupa todo el espacio vertical disponible */
                 }
 
                 ul.products li.product img {
@@ -103,8 +95,39 @@ class AssetsManager {
                     height: auto !important;
                     margin-bottom: 8px !important;
                     display: block !important;
-                    /* Aseguramos que la imagen siempre quede arriba */
                     margin-top: 0 !important;
+                }
+
+                /* TÍTULO: Empuja lo de abajo hacia el fondo */
+                ul.products li.product h2.woocommerce-loop-product__title,
+                ul.products li.product .woocommerce-loop-category__title {
+                    font-size: 14px !important;
+                    line-height: 1.3 !important;
+                    padding-top: 5px !important;
+                    min-height: 0 !important;
+                    margin-bottom: auto !important; /* Esto empuja Precio y Oferta hacia abajo */
+                }
+
+                /* PRECIO Y OFERTA */
+                ul.products li.product .onsale {
+                    position: static !important;        /* Dejamos de flotarla sobre la imagen */
+                    display: inline-block !important;   /* Comportamiento de caja pequeña */
+                    width: auto !important;             /* Ancho automático (no estirado) */
+                    align-self: center !important;      /* Centrado horizontalmente */
+                    margin-bottom: 5px !important;
+                    margin-top: 5px !important;
+
+                    font-size: 10px !important;
+                    padding: 3px 8px !important;
+                    line-height: 1 !important;
+                    min-height: 0 !important;
+                    border-radius: 0 !important;
+                    top: auto !important; right: auto !important; left: auto !important;
+                }
+
+                ul.products li.product .price {
+                    margin-bottom: 5px !important;
+                    align-self: center !important;
                 }
 
                 /* BOTÓN ALINEADO AL FONDO */
@@ -112,9 +135,7 @@ class AssetsManager {
                     font-size: 11px !important;
                     padding: 8px 10px !important;
                     width: 100% !important;
-
-                    /* ¡ESTO ES LO IMPORTANTE! */
-                    margin-top: auto !important; /* Empuja el botón al final de la tarjeta */
+                    margin-top: 0 !important;
                 }
 
                 /* 4. ARREGLO DEL MENÚ (Suave) */
