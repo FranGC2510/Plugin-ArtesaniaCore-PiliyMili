@@ -23,6 +23,9 @@ class FrontManager {
 
         // 4. SHORTCODE DE NOVEDADES (Portada)
         add_shortcode( 'seccion_novedades', [ $this, 'mostrar_novedades_estilizadas' ] );
+
+        // 5. Enganchamos nuestros estilos al cabezal de la web
+        add_action( 'wp_head', [ $this, 'imprimir_estilos_movil' ] );
     }
 
     /**
@@ -120,13 +123,78 @@ class FrontManager {
      * Shortcode: [seccion_novedades]
      */
     public function mostrar_novedades_estilizadas() {
-            // Usamos la misma variable de estilo para que sean gemelos
-            $estilo_titulo = 'text-align:center; text-transform:none; font-weight:300; margin-top:60px; margin-bottom:20px; font-size:34px; color:#000000; line-height: 1.2;';
+        // Usamos la misma variable de estilo para que sean gemelos
+        $estilo_titulo = 'text-align:center; text-transform:none; font-weight:300; margin-top:60px; margin-bottom:20px; font-size:34px; color:#000000; line-height: 1.2;';
 
-            $html  = '<h2 class="wp-block-heading" style="' . $estilo_titulo . '">Novedades</h2>';
-            $html .= do_shortcode('[products limit="4" columns="4" orderby="date" order="DESC"]');
+        $html  = '<h2 class="wp-block-heading" style="' . $estilo_titulo . '">Novedades</h2>';
+        $html .= do_shortcode('[products limit="4" columns="4" orderby="date" order="DESC"]');
 
-            // Margen inferior para separar del pie de página
-            return '<div style="max-width: 1000px; margin-left: auto; margin-right: auto; margin-bottom: 50px;">' . $html . '</div>';
-       }
+        // Margen inferior para separar del pie de página
+        return '<div style="max-width: 1000px; margin-left: auto; margin-right: auto; margin-bottom: 50px;">' . $html . '</div>';
+    }
+
+/**
+     * Inyecta CSS para forzar 2 columnas en móvil
+     * Se carga en el <head> de la web automáticamente.
+     */
+    public function imprimir_estilos_movil() {
+        ?>
+        <style>
+            /* === MODO MOSAICO (2 COLUMNAS) EN MÓVIL === */
+            @media (max-width: 768px) {
+
+                /* 1. ELIMINAR EL HUECO FANTASMA (Vital para Storefront) */
+                ul.products::before,
+                ul.products::after {
+                    content: none !important;
+                    display: none !important;
+                }
+
+                /* 2. FORZAR GRID (Incluimos .home para ganar al centrado anterior) */
+                ul.products,
+                .home .entry-content ul.products {
+                    display: grid !important;
+                    grid-template-columns: 1fr 1fr !important; /* 50% - 50% */
+                    column-gap: 15px !important;
+                    row-gap: 20px !important;
+                    margin-bottom: 40px !important;
+                    justify-content: start !important; /* Anulamos el centrado flex */
+                }
+
+                /* 3. RESETEAR ESTILOS DE LISTA */
+                ul.products li.product,
+                .home .entry-content ul.products li.product {
+                    width: 100% !important;
+                    float: none !important;
+                    margin: 0 !important;
+                    clear: none !important;
+                }
+
+                /* 4. TEXTOS Y TÍTULOS MÁS PEQUEÑOS */
+                ul.products li.product h2.woocommerce-loop-product__title,
+                ul.products li.product .woocommerce-loop-category__title {
+                    font-size: 14px !important;
+                    line-height: 1.3 !important;
+                    padding-top: 5px !important;
+                    min-height: 0 !important;
+                }
+
+                /* 5. IMÁGENES AL 100% */
+                ul.products li.product img {
+                    width: 100% !important;
+                    height: auto !important;
+                    margin-bottom: 8px !important;
+                    display: block !important;
+                }
+
+                /* 6. BOTÓN */
+                ul.products li.product .button {
+                    font-size: 11px !important;
+                    padding: 8px 10px !important;
+                    width: 100% !important;
+                }
+            }
+        </style>
+        <?php
+    }
 }
