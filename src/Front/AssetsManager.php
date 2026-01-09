@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class AssetsManager
  * Responsable de inyectar estilos (CSS) de forma organizada.
  * Separa estrictamente la lógica Global de la Lógica Móvil.
- * * @package Artesania\Core\Front
+ * @package Artesania\Core\Front
  */
 class AssetsManager {
 
@@ -26,7 +26,6 @@ class AssetsManager {
 
     /**
      * Carga las tipografías desde Google Fonts.
-     * Esta es la forma estándar de WordPress: no bloquea la carga y es compatible con caché.
      */
     public function load_google_fonts() {
         wp_enqueue_style(
@@ -371,6 +370,60 @@ class AssetsManager {
             .wp-block-group:has(.woocommerce-info), .wp-block-group:not(:has(.product)) { display: none !important; }
             .home .entry-content ul.products { display: flex !important; flex-wrap: wrap !important; justify-content: center !important; }
             .home .entry-content ul.products li.product { float: none !important; margin-left: 10px !important; margin-right: 10px !important; }
+
+            /* === 9. REFACTORIZACIÓN (ESTILOS MOVIDOS DESDE PHP) === */
+
+            /* Título Superior (Colecciones / Ofertas / Explora) */
+            /* Reemplaza: STYLE_TITLE_TOP */
+            .artesania-title-top {
+                text-align: center !important;
+                text-transform: none !important;
+                font-weight: 300 !important;
+                margin-top: 0 !important;
+                margin-bottom: 30px !important;
+                font-size: 34px !important;
+                color: #000000 !important;
+                line-height: 1.2 !important;
+            }
+
+            /* Título Inferior (Separador de secciones) */
+            /* Reemplaza: STYLE_TITLE_BOTTOM */
+            .artesania-title-bottom {
+                text-align: center !important;
+                text-transform: none !important;
+                font-weight: 300 !important;
+                margin-top: 60px !important;
+                margin-bottom: 20px !important;
+                font-size: 34px !important;
+                border-top: 1px solid #e6e6e6 !important;
+                padding-top: 50px !important;
+                color: #000000 !important;
+                line-height: 1.2 !important;
+            }
+
+            /* Utilidades de Margen (usadas en Shortcodes) */
+            .artesania-mb-20 { margin-bottom: 20px !important; }
+            .artesania-mb-50 { margin-bottom: 50px !important; }
+            .artesania-mt-60 { margin-top: 60px !important; }
+
+            /* Wrappers de Shortcodes */
+            .artesania-section-wrapper {
+                max-width: 1000px !important;
+                margin: 0 auto !important;
+            }
+
+            /* Footer Personalizado */
+            .artesania-site-info {
+                text-align: center !important;
+                padding: 2em 0 !important;
+                font-size: 0.9em !important;
+                clear: both !important;
+                border-top: 1px solid #f0f0f0 !important;
+                margin-top: 2em !important;
+            }
+            .artesania-separator { margin: 0 10px !important; color: #ccc !important; }
+            .artesania-legal-link { color: inherit !important; text-decoration: none !important; }
+
         </style>
         <?php
     }

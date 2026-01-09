@@ -9,19 +9,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Class FrontManager
- * * Gestiona la lógica de presentación del frontend:
+ * Gestiona la lógica de presentación del frontend:
  * - Footer personalizado.
  * - Estructura de cabeceras en Tienda y Categorías.
  * - Shortcodes de secciones (Ofertas y Novedades).
- * * @package Artesania\Core\Front
+ * @package Artesania\Core\Front
  */
 class FrontManager {
 
-    /**
-     * Estilos CSS inline para los títulos H2 generados dinámicamente.
-     */
-    private const STYLE_TITLE_TOP = 'text-align:center; text-transform:none; font-weight:300; margin-top:0px; margin-bottom:30px; font-size:34px; color:#000000; line-height:1.2;';
-    private const STYLE_TITLE_BOTTOM = 'text-align:center; text-transform:none; font-weight:300; margin-top:60px; margin-bottom:20px; font-size:34px; border-top:1px solid #e6e6e6; padding-top:50px; color:#000000; line-height:1.2;';
+    /* CONSTANTES DE ESTILO ELIMINADAS EN REFACTORIZACIÓN - AHORA EN CSS */
 
     public function __construct() {
         // 1. Footer
@@ -65,14 +61,14 @@ class FrontManager {
     public function render_custom_copyright(): void {
         $year = date( 'Y' );
         ?>
-        <div class="site-info" style="text-align:center; padding: 2em 0; font-size: 0.9em; clear:both; border-top: 1px solid #f0f0f0; margin-top: 2em;">
+        <div class="site-info artesania-site-info">
             &copy; <?php echo esc_html( $year ); ?> <strong>PiliYMili</strong>
-            <span style="margin: 0 10px; color: #ccc;">|</span>
-            <a href="/aviso-legal-y-condiciones-de-uso" style="color:inherit; text-decoration:none;">Aviso Legal</a>
+            <span class="artesania-separator">|</span>
+            <a href="/aviso-legal-y-condiciones-de-uso" class="artesania-legal-link">Aviso Legal</a>
             &nbsp;•&nbsp;
-            <a href="/politica-privacidad" style="color:inherit; text-decoration:none;">Privacidad</a>
+            <a href="/politica-privacidad" class="artesania-legal-link">Privacidad</a>
             &nbsp;•&nbsp;
-            <a href="/terminos-y-condiciones" style="color:inherit; text-decoration:none;">Términos</a>
+            <a href="/terminos-y-condiciones" class="artesania-legal-link">Términos</a>
         </div>
         <?php
     }
@@ -85,9 +81,9 @@ class FrontManager {
 
         // CASO 1: Página Principal de Tienda
         if ( is_shop() ) {
-            echo '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_TOP . '">Colecciones</h2>';
+            echo '<h2 class="wp-block-heading artesania-title-top">Colecciones</h2>';
             echo do_shortcode('[product_categories limit="6" columns="6" parent="0"]');
-            echo '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_BOTTOM . '">Todos los productos</h2>';
+            echo '<h2 class="wp-block-heading artesania-title-bottom">Todos los productos</h2>';
             return;
         }
 
@@ -103,9 +99,9 @@ class FrontManager {
 
             // Solo mostramos el bloque "Explora" si hay subcategorías
             if ( ! empty( $children ) ) {
-                echo '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_TOP . '">Explora ' . esc_html( $obj->name ) . '</h2>';
+                echo '<h2 class="wp-block-heading artesania-title-top">Explora ' . esc_html( $obj->name ) . '</h2>';
                 echo do_shortcode('[product_categories limit="6" columns="6" parent="' . esc_attr( (string)$obj->term_id ) . '"]');
-                echo '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_BOTTOM . '">Productos</h2>';
+                echo '<h2 class="wp-block-heading artesania-title-bottom">Productos</h2>';
             }
             // Si es categoría final, no mostramos nada extra (para evitar redundancia con el título H1)
         }
@@ -120,22 +116,22 @@ class FrontManager {
         $sale_ids = wc_get_product_ids_on_sale();
         if ( empty( $sale_ids ) ) return '';
 
-        $html  = '<h2 class="wp-block-heading" style="' . self::STYLE_TITLE_TOP . ' margin-bottom:20px;">Productos rebajados</h2>';
+        // Usamos clases CSS para margin-bottom:20px
+        $html  = '<h2 class="wp-block-heading artesania-title-top artesania-mb-20">Productos rebajados</h2>';
         $html .= do_shortcode('[sale_products limit="5" columns="5"]');
 
-        return '<div style="max-width: 1000px; margin: 0 auto;">' . $html . '</div>';
+        return '<div class="artesania-section-wrapper">' . $html . '</div>';
     }
 
     /**
      * Shortcode: [seccion_novedades]
      */
     public function render_news_section(): string {
-        // Ajustamos el margen superior para novedades
-        $style = str_replace( 'margin-top:0px', 'margin-top:60px', self::STYLE_TITLE_TOP );
-
-        $html  = '<h2 class="wp-block-heading" style="' . $style . ' margin-bottom:20px;">Novedades</h2>';
+        // Usamos clases auxiliares: artesania-mt-60 (para reemplazar margin-top del title-top)
+        $html  = '<h2 class="wp-block-heading artesania-title-top artesania-mt-60 artesania-mb-20">Novedades</h2>';
         $html .= do_shortcode('[products limit="5" columns="5" orderby="date" order="DESC"]');
 
-        return '<div style="max-width: 1000px; margin: 0 auto; margin-bottom: 50px;">' . $html . '</div>';
+        // wrapper con mb-50
+        return '<div class="artesania-section-wrapper artesania-mb-50">' . $html . '</div>';
     }
 }
