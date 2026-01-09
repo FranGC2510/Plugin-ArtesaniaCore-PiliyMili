@@ -18,7 +18,9 @@ class AssetsManager {
     public function __construct() {
         // 1. Cargar fuentes de Google
         add_action( 'wp_enqueue_scripts', [ $this, 'load_google_fonts' ] );
-        // 2. Encolar Hoja de Estilos Principal (Eliminado CSS Inline)
+
+        // 2. Encolar Hoja de Estilos Principal (Eliminado CSS Inline antiguo)
+        // Antes llamaba a 'render_global_css', ahora llamamos a 'enqueue_styles'
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
     }
 
@@ -35,32 +37,21 @@ class AssetsManager {
     }
 
     /**
-     * Encola el archivo CSS principal del plugin.
-     * Utiliza filemtime para versionado automático (cache busting) en desarrollo.
+     * CONEXIÓN CRÍTICA: Carga el archivo artesania-style.css
      */
     public function enqueue_styles() {
-        // Ruta al archivo CSS físico
-        // Asume: src/Front/assets/css/artesania-style.css
-        // Ajustamos la ruta relativa desde este archivo (__FILE__)
-        // __FILE__ está en src/Front/
-        // URL base del plugin: plugin_dir_url( dirname( dirname( __FILE__ ) ) ) si estuviéramos en root
-        // Usamos una constante o cálculo relativo.
-
-        // Calculamos la URL correcta del plugin
-        // Nota: Asumo que el plugin está en 'wp-content/plugins/artesania-core/'
-        // La estructura es src/Front/assets/css/artesania-style.css
-
+        // Ruta relativa al archivo CSS físico que creaste
         $css_path = 'src/Front/assets/css/artesania-style.css';
 
-        // Truco para obtener la URL base del plugin desde una clase interna
-        // Subimos 2 niveles desde src/Front -> src -> root
+        // Calculamos la URL base del plugin correctamente
+        // dirname( dirname( __DIR__ ) ) nos lleva a la raíz del plugin
         $plugin_url = plugin_dir_url( dirname( dirname( __DIR__ ) ) . '/artesania-core.php' );
 
         wp_enqueue_style(
-            'artesania-core-style',
-            $plugin_url . $css_path,
+            'artesania-core-style', // ID único del estilo
+            $plugin_url . $css_path, // URL completa al archivo
             [],
-            '2.0.0'
+            '2.2.0' // Versión para forzar la recarga del caché
         );
     }
 }
