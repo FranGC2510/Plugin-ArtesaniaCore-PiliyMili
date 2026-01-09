@@ -16,10 +16,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AssetsManager {
 
     public function __construct() {
+        // 1. Cargar fuentes de Google de forma óptima
+        add_action( 'wp_enqueue_scripts', [ $this, 'load_google_fonts' ] );
         // 1. Estilos Globales (Prioridad 99)
         add_action( 'wp_head', [ $this, 'render_global_css' ], 99 );
         // 2. Estilos Móviles (Prioridad 100 para sobrescribir)
         add_action( 'wp_head', [ $this, 'render_mobile_css' ], 100 );
+    }
+
+    /**
+     * Carga las tipografías desde Google Fonts.
+     * Esta es la forma estándar de WordPress: no bloquea la carga y es compatible con caché.
+     */
+    public function load_google_fonts() {
+        wp_enqueue_style(
+            'artesania-google-fonts',
+            'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;600;700&display=swap',
+            [],
+            '2.0.0'
+        );
     }
 
     /**
@@ -157,6 +172,26 @@ class AssetsManager {
     public function render_global_css(): void {
         ?>
         <style id="artesania-global-css">
+
+            /* === 0. IDENTIDAD TIPOGRÁFICA === */
+            /* Títulos y Cabeceras: CINZEL */
+            h1, h2, h3, h4, h5, h6,
+            .entry-title,
+            .wp-block-heading,
+            .wc-block-grid__product-title,
+            .woocommerce-loop-product__title,
+            .site-title,
+            .page-title {
+                font-family: 'Cinzel', serif !important;
+                text-transform: none !important;
+            }
+
+            /* Cuerpo, Botones y Menús: MONTSERRAT */
+            body, p, li, a, button, input, textarea, select,
+            .site-content, .entry-content, .main-navigation, .handheld-navigation,
+            .storefront-primary-navigation, .button, .price, .onsale, label {
+                font-family: 'Montserrat', sans-serif !important;
+            }
             /* === 1. LÍMITES Y ESTRUCTURA === */
             .col-full, .site-content .col-full { max-width: 1200px !important; margin: 0 auto !important; padding-left: 30px !important; padding-right: 30px !important; }
             .storefront-breadcrumb { display: none; }
@@ -292,7 +327,47 @@ class AssetsManager {
                 .entry-content form > p:has(input[type="submit"]), .entry-content form > div:has(input[type="submit"]), .entry-content input[type="submit"] { grid-column: 1 / -1 !important; grid-row: 4 !important; }
             }
 
-            /* === 7. EXTRAS === */
+            /* === 7. FORMULARIOS Y DESPLEGABLES === */
+            /* Base común: Selects, Cantidad y Campo Personalizado */
+            .variations select,
+            .quantity .input-text.qty,
+            .artesania-custom-field input {
+                border: 1px solid #000000 !important;
+                border-radius: 0 !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+
+                /* MÁS PRESENCIA */
+                padding: 20px !important;       /* Aumentamos relleno */
+                font-size: 15px !important;     /* Aumentamos letra */
+                min-height: 60px !important;    /* Aumentamos altura */
+
+                font-family: 'Montserrat', sans-serif !important;
+                box-shadow: none !important;
+            }
+
+            /* REGLA DE ORO: Selects y Custom Field ocupan el 100% */
+            .variations select,
+            .artesania-custom-field input {
+                width: 100% !important;
+                margin-bottom: 20px !important; /* Separación vertical */
+            }
+
+            /* La caja de cantidad (número) NO debe ser 100% */
+            .quantity .input-text.qty {
+                width: 80px !important;
+                margin-right: 10px !important;
+            }
+
+            /* Etiquetas */
+            .variations label {
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                font-size: 12px !important;
+                margin-bottom: 8px !important; /* Un poco más de aire */
+                display: block !important;
+            }
+            /* === 8. EXTRAS === */
             .wp-block-group:has(.woocommerce-info), .wp-block-group:not(:has(.product)) { display: none !important; }
             .home .entry-content ul.products { display: flex !important; flex-wrap: wrap !important; justify-content: center !important; }
             .home .entry-content ul.products li.product { float: none !important; margin-left: 10px !important; margin-right: 10px !important; }

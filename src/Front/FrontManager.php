@@ -33,6 +33,22 @@ class FrontManager {
         // 3. Shortcodes
         add_shortcode( 'seccion_ofertas', [ $this, 'render_offers_section' ] );
         add_shortcode( 'seccion_novedades', [ $this, 'render_news_section' ] );
+
+        // 4. AJUSTE DE TEXTO DE BOTONES
+        add_filter( 'woocommerce_product_add_to_cart_text', [ $this, 'simplify_button_text' ] );
+    }
+
+    /**
+     * Filtro para cambiar "Seleccionar opciones" por "Ver opciones".
+     * Esto iguala el tamaño visual de los botones variable vs simple.
+     */
+    public function simplify_button_text( $text ) {
+        // Si el texto es exactamente el estándar largo...
+        if ( 'Seleccionar opciones' === $text ) {
+            // ...lo cambiamos por uno más corto y directo.
+            return __( 'Ver opciones', 'artesania-core' );
+        }
+        return $text;
     }
 
     /**
