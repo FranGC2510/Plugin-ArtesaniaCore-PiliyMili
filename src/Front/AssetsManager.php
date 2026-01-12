@@ -9,12 +9,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Class AssetsManager
- * Responsable de encolar assets (CSS/JS) de forma organizada.
- * WPO: Los estilos ahora se cargan desde un archivo externo estático.
+ *
+ * Responsable de la gestión y encolado de recursos estáticos (CSS, JS, Fuentes).
+ * Prioriza el rendimiento (WPO) evitando la carga de estilos inline y utilizando
+ * el sistema de dependencias de WordPress.
+ *
  * @package Artesania\Core\Front
  */
 class AssetsManager {
 
+    /**
+     * Inicializa los hooks para encolar scripts y estilos.
+     * Usa 'wp_enqueue_scripts' para el frontend.
+     */
     public function __construct() {
         // 1. Cargar fuentes de Google
         add_action( 'wp_enqueue_scripts', [ $this, 'load_google_fonts' ] );
@@ -25,7 +32,12 @@ class AssetsManager {
     }
 
     /**
-     * Carga las tipografías desde Google Fonts.
+     * Carga las tipografías corporativas desde Google Fonts.
+     * Optimizado para carga asíncrona y compatibilidad con caché.
+     *
+     * Fuentes: Cinzel (Títulos), Montserrat (Cuerpo).
+     *
+     * @return void
      */
     public function load_google_fonts() {
         wp_enqueue_style(
@@ -37,7 +49,11 @@ class AssetsManager {
     }
 
     /**
-     * CONEXIÓN CRÍTICA: Carga el archivo artesania-style.css
+     * Encola la hoja de estilos principal del plugin.
+     * Calcula la URL absoluta del archivo CSS basándose en la estructura del directorio.
+     * Incluye versionado para control de caché del navegador.
+     *
+     * @return void
      */
     public function enqueue_styles() {
         // Ruta relativa al archivo CSS físico que creaste

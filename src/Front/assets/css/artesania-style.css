@@ -232,3 +232,15 @@ h2.wp-block-heading { margin-top: 50px !important; }
     .post-type-archive-product .woocommerce-products-header__title.page-title { margin-bottom: 0 !important; text-align: center !important; width: 100% !important; display: block !important; }
     .home.page .site-content { padding-top: 10px !important; } .page .entry-header { display: none !important; } .page .site-content { padding-top: 30px !important; } body { overflow-x: hidden !important; }
 }
+/* === 15. CUSTOMIZER (Limpieza de PHP) === */
+.artesania-custom-field-wrapper {
+    margin-bottom: 20px !important;
+}
+.artesania-custom-label {
+    display: block !important;
+    font-weight: bold !important;
+    margin-bottom: 5px !important;
+    text-transform: uppercase !important;
+    font-size: 12px !important;
+}
+/* La caja del input ya hereda estilos de .artesania-custom-field input definidos arriba */

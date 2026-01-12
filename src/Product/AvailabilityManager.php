@@ -6,8 +6,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Clase AvailabilityManager
- * Gestiona los mensajes de stock y disponibilidad del producto.
+ * Class AvailabilityManager
+ *
+ * Gestiona la mensajería de stock y disponibilidad.
+ * Adapta el lenguaje técnico de WooCommerce ("Reserva") a la filosofía "Slow Design"
+ * ("Fabricación bajo pedido").
+ *
+ * @package Artesania\Core\Product
  */
 class AvailabilityManager {
 
@@ -17,10 +22,11 @@ class AvailabilityManager {
     }
 
     /**
-     * Cambia el texto "Disponible para reserva" por algo más artesanal.
-     * * @param string $text El texto original de WooCommerce.
-     * @param \WC_Product $product El objeto producto actual.
-     * @return string El texto modificado.
+     * Filtra y modifica el texto de disponibilidad mostrado al usuario.
+     *
+     * @param string      $text    Texto original de disponibilidad.
+     * @param \WC_Product $product Objeto del producto.
+     * @return string Texto modificado y localizado.
      */
     public function custom_backorder_text( $text, $product ) {
         // Verificar si el producto gestiona inventario y admite reservas
