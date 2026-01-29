@@ -120,6 +120,35 @@ h2.wp-block-heading { margin-top: 50px !important; }
     .single_add_to_cart_button { flex-grow: 1 !important; }
 }
 
+/* === 10b. FORZAR BOTÓN ABAJO (Pie de formulario) === */
+.woocommerce-variation-add-to-cart {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    margin-top: 30px !important;
+    padding-top: 20px !important;
+    border-top: 1px solid #eee !important;
+}
+
+.woocommerce-variation-add-to-cart .quantity {
+    margin-bottom: 0 !important;
+    margin-right: 15px !important;
+}
+
+.woocommerce-variation-add-to-cart .single_add_to_cart_button {
+    flex-grow: 1 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Forzar que el campo personalizado ocupe todo el ancho para empujar el botón abajo */
+.artesania-custom-field-wrapper {
+    width: 100% !important;
+    flex: 1 0 100% !important;
+    clear: both !important;
+    margin-bottom: 20px !important;
+}
+
 /* === 11. ESTADOS DE BOTÓN === */
 .single_add_to_cart_button.disabled, .single_add_to_cart_button:disabled, .single_add_to_cart_button[disabled] { background-color: #ffffff !important; color: #bbbbbb !important; border: 1px solid #e0e0e0 !important; opacity: 1 !important; cursor: not-allowed !important; }
 .single_add_to_cart_button.disabled:hover, .single_add_to_cart_button:disabled:hover { background-color: #ffffff !important; color: #bbbbbb !important; }

@@ -67,7 +67,7 @@ class AssetsManager {
             'artesania-core-style', // ID único del estilo
             $plugin_url . $css_path, // URL completa al archivo
             [],
-            '2.2.3' // Versión para forzar la recarga del caché
+            '2.2.4' // Versión para forzar la recarga del caché
         );
     }
 }
