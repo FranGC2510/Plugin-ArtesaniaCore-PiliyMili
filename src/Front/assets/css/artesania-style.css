@@ -120,35 +120,38 @@ h2.wp-block-heading { margin-top: 50px !important; }
     .single_add_to_cart_button { flex-grow: 1 !important; }
 }
 
-/* === 10b. FORZAR BOTÓN ABAJO (Pie de formulario) === */
+/* === 10b. DISEÑO EN "T" (Personalización arriba, Botón+Cantidad abajo juntos) === */
+
 .woocommerce-variation-add-to-cart {
-    width: 100% !important;
     display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    margin-top: 30px !important;
-    padding-top: 20px !important;
-    border-top: 1px solid #eee !important;
-}
-
-.woocommerce-variation-add-to-cart .quantity {
-    margin-bottom: 0 !important;
-    margin-right: 15px !important;
-    margin-top: 15px !important;
-}
-
-.woocommerce-variation-add-to-cart .single_add_to_cart_button {
-    flex-grow: 1 !important;
-    margin-bottom: 0 !important;
-    margin-top: 15px !important;
-}
-
-/* Forzar que el campo personalizado ocupe todo el ancho para empujar el botón abajo */
-.artesania-custom-field-wrapper {
+    flex-wrap: wrap !important; /* Permite que haya varias líneas */
+    align-items: flex-end !important; /* Alinea los bajos de los inputs */
     width: 100% !important;
+    border-top: 1px solid #eee !important;
+    padding-top: 20px !important;
+    margin-top: 20px !important;
+}
+
+/* 1. EL CAMPO DE TEXTO (Arriba del todo) */
+.artesania-custom-field-wrapper {
     flex: 1 0 100% !important;
-    clear: both !important;
+    width: 100% !important;
     margin-bottom: 20px !important;
+}
+
+/* 2. LA CANTIDAD (Abajo a la izquierda) */
+.woocommerce-variation-add-to-cart .quantity {
+    flex: 0 0 80px !important;
+    width: 80px !important;
+    margin-right: 15px !important;
+    margin-bottom: 0 !important;
+}
+
+/* 3. EL BOTÓN (Abajo a la derecha) */
+.woocommerce-variation-add-to-cart .single_add_to_cart_button {
+    flex: 1 1 auto !important;
+    width: auto !important; ,,,,,,,,
+    margin-bottom: 0 !important;
 }
 
 /* === 11. ESTADOS DE BOTÓN === */
