@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Se encarga de la inyección de dependencias y la inicialización de módulos.
  *
  * @package Artesania\Core
- * @version 2.2.1
+ * @version 2.2.2
  * @since   1.0.0
  */
 final class Main {

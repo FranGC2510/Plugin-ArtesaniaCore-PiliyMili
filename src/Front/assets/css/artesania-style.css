@@ -106,7 +106,10 @@ h2.wp-block-heading { margin-top: 50px !important; }
 /* === 10. ACTION BAR === */
 .quantity { margin-bottom: 0 !important; margin-right: 0 !important; }
 .quantity .input-text.qty { width: 100% !important; margin-right: 0 !important; height: 52px !important; border: 1px solid #000000 !important; font-weight: 600 !important; padding: 0 !important; }
-.single_add_to_cart_button { height: 52px !important; line-height: 52px !important; padding: 0 20px !important; border-radius: 0 !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 13px !important; letter-spacing: 1px !important; transition: all 0.2s ease !important; }
+.single_add_to_cart_button { height: 52px !important; line-height: 52px !important; padding: 0 20px !important; border-radius: 0 !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 13px !important; letter-spacing: 1px !important; transition: all 0.2s ease !important; display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;}
 
 @media (max-width: 768px) { .quantity { width: 80px !important; margin-bottom: 15px !important; } .single_add_to_cart_button { width: 100% !important; margin-top: 0 !important; } }
 @media (min-width: 769px) {
