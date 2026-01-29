@@ -6,7 +6,7 @@
  * Author: Fco Javier García Cañero
  * Package: Artesania\Core
  * --- CONFIGURACIÓN GITHUB ---
- * GitHub Plugin URI: FranGC2510/Plugin-ArtesaniaCore-PiliyMili.git
+ * GitHub Plugin URI: FranGC2510/Plugin-ArtesaniaCore-PiliyMili
  * Primary Branch: main
  */
 
