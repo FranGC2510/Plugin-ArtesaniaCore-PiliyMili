@@ -137,6 +137,50 @@ h2.wp-block-heading { margin-top: 50px !important; }
 .artesania-section-wrapper ul.products, .home .entry-content ul.products { display: flex !important; flex-wrap: wrap !important; justify-content: center !important; }
 .artesania-section-wrapper ul.products li.product, .home .entry-content ul.products li.product { float: none !important; margin-left: 10px !important; margin-right: 10px !important; }
 
+/* === 13b. FIX ZONA TABLET/MÓVIL GRANDE (600px - 900px) === */
+/* Forzamos que se apile antes de que se rompa el diseño */
+@media (min-width: 600px) and (max-width: 900px) {
+
+    /* 1. Bloque de Medios y Texto: Forzar vertical */
+    .wp-block-media-text {
+        display: block !important;
+        grid-template-columns: 1fr !important;
+    }
+
+    /* 2. Imagen y Texto al 100% de ancho */
+    .wp-block-media-text__media,
+    .wp-block-media-text__content {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Espacio entre la foto y el texto */
+    .wp-block-media-text__media {
+        margin-bottom: 25px !important;
+    }
+
+    /* 3. Columnas normales: Forzar una debajo de otra */
+    .wp-block-columns {
+        display: block !important;
+        flex-wrap: wrap !important;
+    }
+
+    .wp-block-column {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 30px !important;
+        flex-basis: 100% !important;
+    }
+
+    /* 4. Evitar que el contenido toque los bordes de la pantalla */
+    .col-full, .site-content .col-full {
+        padding-left: 30px !important;
+        padding-right: 30px !important;
+    }
+}
+
 /* === 14. MOBILE SPECIFIC === */
 @media (max-width: 768px) {
     .col-full { padding-left: 20px !important; padding-right: 20px !important; }
