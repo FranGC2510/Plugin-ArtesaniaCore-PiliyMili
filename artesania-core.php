@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Artesanía Core (Lógica de Negocio)
  * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout y Personalización bajo arquitectura MVC y POO.
- * Version: 2.2.6
+ * Version: 2.3.0
  * Author: Fco Javier García Cañero
  * Package: Artesania\Core
  *
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Se encarga de la inyección de dependencias y la inicialización de módulos.
  *
  * @package Artesania\Core
- * @version 2.2.1
+ * @version 2.3.0
  * @since   1.0.0
  */
 final class Main {
@@ -70,8 +70,15 @@ final class Main {
             'src/Product/Customizer.php',
             'src/Product/AvailabilityManager.php',
             'src/Checkout/CheckoutManager.php',
-            'src/Front/AssetsManager.php', // ¡NUEVO!
+            'src/Front/AssetsManager.php',
             'src/Front/FrontManager.php',
+
+            'src/Admin/AdminAssetsManager.php',
+            'src/Sales/SalesCalculator.php',
+            'src/Sales/SalesLimiter.php',
+            'src/Admin/SettingsPage.php',
+            'src/Admin/DashboardWidget.php',
+            'src/Admin/AdminManager.php',
         ];
 
         foreach ( $modules as $file ) {
@@ -108,6 +115,18 @@ final class Main {
         }
         if ( class_exists( '\Artesania\Core\Front\FrontManager' ) ) {
             new \Artesania\Core\Front\FrontManager();
+        }
+
+        // MÓDULOS DE CONTROL
+
+        // A. El Limitador de Ventas (Siempre activo para vigilar)
+        if ( class_exists( '\Artesania\Core\Sales\SalesLimiter' ) ) {
+            new \Artesania\Core\Sales\SalesLimiter();
+        }
+
+        // B. El Panel de Administración (Solo si estamos en el admin)
+        if ( is_admin() && class_exists( '\Artesania\Core\Admin\AdminManager' ) ) {
+            new \Artesania\Core\Admin\AdminManager();
         }
     }
 }
