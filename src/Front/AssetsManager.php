@@ -57,17 +57,16 @@ class AssetsManager {
      */
     public function enqueue_styles() {
         // Ruta relativa al archivo CSS físico que creaste
-        $css_path = 'src/Front/assets/css/artesania-style.css';
+        $css_path = 'assets/css/front.css';
 
-        // Calculamos la URL base del plugin correctamente
-        // dirname( dirname( __DIR__ ) ) nos lleva a la raíz del plugin
+        // URL raíz del plugin
         $plugin_url = plugin_dir_url( dirname( dirname( __DIR__ ) ) . '/artesania-core.php' );
 
         wp_enqueue_style(
-            'artesania-core-style', // ID único del estilo
-            $plugin_url . $css_path, // URL completa al archivo
+            'artesania-core-style',
+            $plugin_url . $css_path,
             [],
-            '2.2.6' // Versión para forzar la recarga del caché
+            '2.3.1'
         );
     }
 }

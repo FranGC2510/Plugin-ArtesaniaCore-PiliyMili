@@ -56,10 +56,14 @@ class FrontManager {
         }
 
         // Ruta absoluta al archivo de vista
-        $file_path = plugin_dir_path( __FILE__ ) . 'views/' . $view_name . '.php';
+        $file_path = dirname( dirname( __DIR__ ) ) . '/templates/' . $view_name . '.php';
 
         if ( file_exists( $file_path ) ) {
             include $file_path;
+        } else {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( "ArtesaniaCore: No se encuentra la vista $view_name en $file_path" );
+            }
         }
     }
 
@@ -96,7 +100,6 @@ class FrontManager {
      */
     public function inject_offer_badge_in_price( $price, $product ) {
         if ( is_product() && $product->is_on_sale() ) {
-            // Usamos la clase CSS definida en artesania-style.css
             $badge = '<span class="artesania-sale-tag">' . esc_html__( '¡OFERTA!', 'artesania-core' ) . '</span>';
             return $price . $badge;
         }

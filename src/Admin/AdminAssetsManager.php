@@ -31,7 +31,7 @@ class AdminAssetsManager {
      * @return void
      */
     public function enqueue_styles(): void {
-        $css_path   = 'src/Admin/assets/css/admin-style.css';
+        $css_path   = 'assets/css/admin.css';
 
         // Calculamos la URL raíz del plugin
         $plugin_url = plugin_dir_url( dirname( dirname( __DIR__ ) ) . '/artesania-core.php' );
@@ -40,7 +40,7 @@ class AdminAssetsManager {
             'artesania-admin-css',
             $plugin_url . $css_path,
             [],
-            '2.3.0'
+            '2.3.1'
         );
     }
 }

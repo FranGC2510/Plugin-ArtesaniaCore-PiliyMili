@@ -51,13 +51,13 @@ class CheckoutManager {
 
         // Calculamos la ruta relativa a la raíz del plugin
         $plugin_url = plugin_dir_url( dirname( dirname( __DIR__ ) ) . '/artesania-core.php' );
-        $js_path    = 'src/Front/assets/js/artesania-checkout.js';
+        $js_path    = 'assets/js/checkout.js';
 
         wp_enqueue_script(
             'artesania-checkout-js',
             $plugin_url . $js_path,
             ['jquery'], // Dependencia vital
-            '2.0.0',
+            '2.3.1',
             true // Cargar en el footer
         );
     }
