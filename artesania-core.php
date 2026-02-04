@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// CONSTANTES GLOBALES DE RUTAS
+// === CONSTANTES GLOBALES DE RUTAS ===
 if ( ! defined( 'ARTESANIA_CORE_PATH' ) ) {
     define( 'ARTESANIA_CORE_PATH', plugin_dir_path( __FILE__ ) );
 }
@@ -32,7 +32,8 @@ if ( ! defined( 'ARTESANIA_CORE_URL' ) ) {
  * Class Main
  *
  * Bootstrapper principal del plugin.
- * Implementa patrón Singleton para la inicialización condicional de módulos.
+ * Implementa patrón Singleton.
+ * Gestiona dependencias, i18n y compatibilidad con HPOS.
  *
  * @package Artesania\Core
  * @version 2.4.0
@@ -55,7 +56,37 @@ final class Main {
 
     private function __construct() {
         $this->load_dependencies();
+        $this->init_hooks();
         $this->init_modules();
+    }
+
+    /**
+     * Inicializa los hooks principales del core (i18n, HPOS).
+     */
+    private function init_hooks(): void {
+        add_action( 'plugins_loaded', [ $this, 'load_textdomain' ] );
+        add_action( 'before_woocommerce_init', [ $this, 'declare_hpos_compatibility' ] );
+    }
+
+    /**
+     * Carga el Text Domain para traducciones.
+     */
+    public function load_textdomain(): void {
+        load_plugin_textdomain(
+            'artesania-core',
+            false,
+            dirname( plugin_basename( __FILE__ ) ) . '/languages'
+        );
+    }
+
+    /**
+     * Declara compatibilidad con High Performance Order Storage (HPOS).
+     * Esto evita que WooCommerce marque el plugin como "Legacy".
+     */
+    public function declare_hpos_compatibility(): void {
+        if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+        }
     }
 
     /**
@@ -91,7 +122,7 @@ final class Main {
     private function init_modules(): void {
         $active_modules = get_option( 'artesania_active_modules', [] );
 
-        // 1. Módulos Condicionales (Configurables)
+        // 1. Módulos Condicionales
         if ( ! empty( $active_modules['customizer'] ) && class_exists( '\Artesania\Core\Product\Customizer' ) ) {
             new \Artesania\Core\Product\Customizer();
         }
@@ -113,7 +144,7 @@ final class Main {
             }
         }
 
-        // 2. Módulos Core (Siempre activos)
+        // 2. Módulos Core
         if ( class_exists( '\Artesania\Core\Sales\SalesLimiter' ) ) {
             new \Artesania\Core\Sales\SalesLimiter();
         }
