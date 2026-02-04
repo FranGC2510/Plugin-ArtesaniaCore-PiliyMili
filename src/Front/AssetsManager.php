@@ -36,8 +36,7 @@ class AssetsManager {
      * Encola la hoja de estilos principal (front.css).
      */
     public function enqueue_styles(): void {
-        $css_path = 'assets/css/front.css';
-        $css_url = ARTESANIA_CORE_URL . $css_path;
+        $css_url = ARTESANIA_CORE_URL . 'assets/css/front.css';
 
         wp_enqueue_style(
             'artesania-core-style',

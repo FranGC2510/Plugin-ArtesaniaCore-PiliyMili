@@ -26,8 +26,7 @@ class AdminAssetsManager {
      * Encola la hoja de estilos principal del panel de administración.
      */
     public function enqueue_admin_styles(): void {
-        $css_relative_path = 'assets/css/admin.css';
-        $css_url = ARTESANIA_CORE_URL . $css_relative_path;
+        $css_url = ARTESANIA_CORE_URL . 'assets/css/admin.css';
 
         wp_enqueue_style(
             'artesania-admin-css',
