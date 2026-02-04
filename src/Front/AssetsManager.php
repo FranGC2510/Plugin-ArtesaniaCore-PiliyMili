@@ -37,14 +37,13 @@ class AssetsManager {
      */
     public function enqueue_styles(): void {
         $css_path = 'assets/css/front.css';
-
         $css_url = ARTESANIA_CORE_URL . $css_path;
 
         wp_enqueue_style(
             'artesania-core-style',
             $css_url,
             [],
-            '2.4.0'
+            ARTESANIA_CORE_VERSION
         );
     }
 }

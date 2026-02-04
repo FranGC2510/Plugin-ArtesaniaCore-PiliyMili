@@ -27,14 +27,13 @@ class AdminAssetsManager {
      */
     public function enqueue_admin_styles(): void {
         $css_relative_path = 'assets/css/admin.css';
-
         $css_url = ARTESANIA_CORE_URL . $css_relative_path;
 
         wp_enqueue_style(
             'artesania-admin-css',
             $css_url,
             [],
-            '2.4.0'
+            ARTESANIA_CORE_VERSION
         );
     }
 }

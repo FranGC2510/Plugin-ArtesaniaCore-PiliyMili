@@ -28,6 +28,11 @@ if ( ! defined( 'ARTESANIA_CORE_URL' ) ) {
     define( 'ARTESANIA_CORE_URL', plugin_dir_url( __FILE__ ) );
 }
 
+// Versión Global para Cache Busting
+if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
+    define( 'ARTESANIA_CORE_VERSION', '2.4.0' );
+}
+
 /**
  * Class Main
  *

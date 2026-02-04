@@ -40,7 +40,7 @@ class CheckoutManager {
             'artesania-checkout-js',
             $js_url,
             ['jquery'],
-            '2.4.0',
+            ARTESANIA_CORE_VERSION,
             true
         );
     }
