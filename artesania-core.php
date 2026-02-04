@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Artesanía Core (Lógica de Negocio)
- * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout y Personalización bajo arquitectura MVC y POO.
- * Version: 2.3.1
+ * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout y Personalización bajo arquitectura MVC.
+ * Version: 2.4.0
  * Author: Fco Javier García Cañero
  * Package: Artesania\Core
  *
@@ -10,6 +10,8 @@
  * GitHub Plugin URI: FranGC2510/Plugin-ArtesaniaCore-PiliyMili
  * Primary Branch: main
  */
+
+declare(strict_types=1);
 
 namespace Artesania\Core;
 
@@ -20,59 +22,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class Main
  *
- * Clase principal del plugin (Bootstrapper).
- * Implementa el patrón de diseño Singleton para asegurar una única instancia de ejecución.
- * Se encarga de la inyección de dependencias y la inicialización de módulos.
+ * Bootstrapper principal del plugin.
+ * Implementa patrón Singleton para la inicialización condicional de módulos.
  *
  * @package Artesania\Core
- * @version 2.3.0
- * @since   1.0.0
+ * @version 2.4.0
  */
 final class Main {
 
-    /**
-     * @var Main|null Instancia única de la clase.
-     */
+    /** @var Main|null Instancia única de la clase. */
     private static $instance = null;
 
     /**
-     * Obtiene la instancia única de la clase (Singleton).
-     *
-     * @return Main La instancia principal.
+     * Obtiene la instancia única (Singleton).
+     * @return Main
      */
-    public static function get_instance() {
+    public static function get_instance(): Main {
         if ( null === self::$instance ) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    /**
-     * Constructor privado para prevenir instanciación externa.
-     * Carga dependencias e inicializa módulos.
-     */
     private function __construct() {
         $this->load_dependencies();
         $this->init_modules();
     }
 
     /**
-     * Carga los archivos de clases requeridos.
-     * Utiliza rutas relativas basadas en la constante __FILE__.
-     *
-     * @return void
+     * Carga las clases PHP requeridas.
      */
-    private function load_dependencies() {
+    private function load_dependencies(): void {
         $base_dir = plugin_dir_path( __FILE__ );
-
-        // Lista de módulos a cargar
-        $modules = [
+        $modules  = [
             'src/Product/Customizer.php',
             'src/Product/AvailabilityManager.php',
             'src/Checkout/CheckoutManager.php',
             'src/Front/AssetsManager.php',
             'src/Front/FrontManager.php',
-
             'src/Admin/AdminAssetsManager.php',
             'src/Sales/SalesCalculator.php',
             'src/Sales/SalesLimiter.php',
@@ -89,47 +76,42 @@ final class Main {
     }
 
     /**
-     * Inicializa las instancias de los módulos (Controladores).
-     * Verifica la existencia de las clases antes de instanciarlas para evitar errores fatales.
-     *
-     * @return void
+     * Inicializa los módulos basándose en la configuración de la base de datos.
      */
-    private function init_modules() {
-        // 1. Módulos de Producto
-        if ( class_exists( '\Artesania\Core\Product\Customizer' ) ) {
+    private function init_modules(): void {
+        $active_modules = get_option( 'artesania_active_modules', [] );
+
+        // 1. Módulos Condicionales (Configurables)
+        if ( ! empty( $active_modules['customizer'] ) && class_exists( '\Artesania\Core\Product\Customizer' ) ) {
             new \Artesania\Core\Product\Customizer();
         }
-        if ( class_exists( '\Artesania\Core\Product\AvailabilityManager' ) ) {
+
+        if ( ! empty( $active_modules['slow_design'] ) && class_exists( '\Artesania\Core\Product\AvailabilityManager' ) ) {
             new \Artesania\Core\Product\AvailabilityManager();
         }
 
-        // 2. Módulo Checkout / Facturas
-        /*
-        if ( class_exists( '\Artesania\Core\Checkout\CheckoutManager' ) ) {
+        if ( ! empty( $active_modules['checkout'] ) && class_exists( '\Artesania\Core\Checkout\CheckoutManager' ) ) {
             new \Artesania\Core\Checkout\CheckoutManager();
-        }*/
-
-        // Módulos Visuales
-        if ( class_exists( '\Artesania\Core\Front\AssetsManager' ) ) {
-            new \Artesania\Core\Front\AssetsManager();
-        }
-        if ( class_exists( '\Artesania\Core\Front\FrontManager' ) ) {
-            new \Artesania\Core\Front\FrontManager();
         }
 
-        // MÓDULOS DE CONTROL
+        if ( ! empty( $active_modules['frontend'] ) ) {
+            if ( class_exists( '\Artesania\Core\Front\AssetsManager' ) ) {
+                new \Artesania\Core\Front\AssetsManager();
+            }
+            if ( class_exists( '\Artesania\Core\Front\FrontManager' ) ) {
+                new \Artesania\Core\Front\FrontManager();
+            }
+        }
 
-        // A. El Limitador de Ventas (Siempre activo para vigilar)
+        // 2. Módulos Core (Siempre activos)
         if ( class_exists( '\Artesania\Core\Sales\SalesLimiter' ) ) {
             new \Artesania\Core\Sales\SalesLimiter();
         }
 
-        // B. El Panel de Administración (Solo si estamos en el admin)
         if ( is_admin() && class_exists( '\Artesania\Core\Admin\AdminManager' ) ) {
             new \Artesania\Core\Admin\AdminManager();
         }
     }
 }
 
-// Arrancar el plugin
 Main::get_instance();

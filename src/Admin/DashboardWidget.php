@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Artesania\Core\Admin;
 
 use Artesania\Core\Sales\SalesCalculator;
@@ -11,11 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class DashboardWidget
  *
  * Widget informativo para el Escritorio de WordPress.
- * Versión optimizada con clases CSS externas.
+ * Muestra el estado fiscal y respeta la configuración de visibilidad.
  *
  * @package Artesania\Core\Admin
- * @author  Fco Javier García Cañero
- * @version 2.3.1
+ * @version 2.4.0
  */
 class DashboardWidget {
 
@@ -24,7 +25,14 @@ class DashboardWidget {
     }
 
     public function register_widget(): void {
-        if ( ! current_user_can( 'manage_options' ) ) return;
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            return;
+        }
+
+        // Verificar preferencia de visibilidad
+        if ( 'yes' !== get_option( 'artesania_show_dashboard_widget', 'yes' ) ) {
+            return;
+        }
 
         wp_add_dashboard_widget(
             'artesania_sales_dashboard',
@@ -35,93 +43,64 @@ class DashboardWidget {
 
     public function render_content(): void {
         $calculator    = new SalesCalculator();
-        $annual_global = $calculator->get_annual_stats();
-        $gateways      = WC()->payment_gateways->get_available_payment_gateways();
+        $annual_stats  = $calculator->get_annual_stats();
+        $gateways      = \WC()->payment_gateways->get_available_payment_gateways();
         $limits        = get_option( 'artesania_sales_limits', [] );
 
         echo '<div class="artesania-dashboard-widget">';
 
-        // --- Resumen Global ---
+        // Resumen Global
         echo '<div class="artesania-summary-box">';
-        echo '<h3 class="artesania-summary-title">TOTAL AÑO ' . date('Y') . '</h3>';
-        echo '<p class="artesania-total-amount">' . wc_price( $annual_global['total'] ) . '</p>';
-        echo '<span class="artesania-total-count">' . esc_html( $annual_global['count'] ) . ' pedidos totales</span>';
+        echo '<h3 class="artesania-summary-title">TOTAL ' . date('Y') . '</h3>';
+        echo '<p class="artesania-total-amount">' . wc_price( $annual_stats['total'] ) . '</p>';
+        echo '<span class="artesania-total-count">' . esc_html( $annual_stats['count'] ) . ' pedidos</span>';
         echo '</div>';
 
-        // --- Tabla de Desglose ---
-        echo '<h4>Desglose por Método de Pago (Acumulado Anual)</h4>';
+        // Tabla de Desglose
         echo '<table class="artesania-table">';
-        echo '<thead><tr>
-                <th>Método</th>
-                <th>Llevamos (Año)</th>
-                <th>Límite Config.</th>
-                <th>Estado</th>
-              </tr></thead>';
-        echo '<tbody>';
+        echo '<thead><tr><th>Método</th><th>Actual</th><th>Límite</th><th>Estado</th></tr></thead><tbody>';
 
         if ( empty( $gateways ) ) {
-            echo '<tr><td colspan="4">No hay métodos activos.</td></tr>';
+            echo '<tr><td colspan="4">Sin métodos activos.</td></tr>';
         } else {
             foreach ( $gateways as $id => $gateway ) {
-                $stats = $calculator->get_annual_stats( $id );
+                $stats     = $calculator->get_annual_stats( $id );
+                $limit_amt = (float) ( $limits[ $id ]['amount'] ?? 0 );
+                $limit_ord = (int) ( $limits[ $id ]['orders'] ?? 0 );
+                $active    = isset( $limits[ $id ]['active'] ) && 'yes' === $limits[ $id ]['active'];
 
-                $limit_amount = isset( $limits[ $id ]['amount'] ) ? (float) $limits[ $id ]['amount'] : 0.0;
-                $limit_orders = isset( $limits[ $id ]['orders'] ) ? (int) $limits[ $id ]['orders'] : 0;
-                $is_active    = isset( $limits[ $id ]['active'] ) && 'yes' === $limits[ $id ]['active'];
+                // Determinar estado
+                $is_blocked_amt = $limit_amt > 0 && $stats['total'] >= $limit_amt;
+                $is_blocked_ord = $limit_ord > 0 && $stats['count'] >= $limit_ord;
 
-                // Formateo de límites
-                $display_limits = [];
-                if ( $limit_amount > 0 ) $display_limits[] = wc_price( $limit_amount );
-                if ( $limit_orders > 0 ) $display_limits[] = $limit_orders . ' ped.';
-
-                // Lógica de Clases CSS para Estados
                 $css_class = 'artesania-status-ok';
-                $icon      = 'Listo';
-                $reasons   = [];
+                $status_txt = 'OK';
 
-                if ( $limit_amount > 0 && $stats['total'] >= $limit_amount ) $reasons[] = 'Dinero';
-                if ( $limit_orders > 0 && $stats['count'] >= $limit_orders ) $reasons[] = 'Pedidos';
-
-                if ( ! empty( $reasons ) ) {
+                if ( $is_blocked_amt || $is_blocked_ord ) {
                     $css_class = 'artesania-status-error';
-                    $icon      = 'Límite alcanzado';
-                } elseif ( ! $is_active ) {
+                    $status_txt = 'Límite';
+                } elseif ( ! $active ) {
                     $css_class = 'artesania-status-info';
-                    $icon      = '(Solo info)';
+                    $status_txt = 'Info';
                 }
 
-                $reason_html = ! empty( $reasons )
-                    ? '<span class="artesania-status-reason">(' . implode( ' + ', $reasons ) . ')</span>'
-                    : '';
-
+                // Renderizado fila
                 echo '<tr>';
-                // Columna Nombre
-                echo '<td>
-                        <span class="artesania-gateway-name">' . esc_html( $gateway->get_title() ) . '</span>
-                      </td>';
+                echo '<td><strong>' . esc_html( $gateway->get_title() ) . '</strong></td>';
+                echo '<td>' . wc_price( $stats['total'] ) . '</td>';
 
-                // Columna Realidad
-                echo '<td>' . wc_price( $stats['total'] ) . '<br><small>' . $stats['count'] . ' ped.</small></td>';
-
-                // Columna Límite
+                $display_limits = [];
+                if ( $limit_amt > 0 ) $display_limits[] = wc_price( $limit_amt );
+                if ( $limit_ord > 0 ) $display_limits[] = $limit_ord . ' ped.';
                 echo '<td class="artesania-status-info">' . ( empty( $display_limits ) ? '∞' : implode( '<br>', $display_limits ) ) . '</td>';
 
-                // Columna Estado (Usando clases)
-                echo '<td>
-                        <div class="artesania-status ' . esc_attr( $css_class ) . '">
-                            ' . $icon . '
-                        </div>
-                        ' . $reason_html . '
-                      </td>';
+                echo '<td><span class="' . esc_attr( $css_class ) . '">' . esc_html( $status_txt ) . '</span></td>';
                 echo '</tr>';
             }
         }
-
         echo '</tbody></table>';
 
-        echo '<div class="artesania-footer-link">';
-        echo '<a href="' . admin_url('options-general.php?page=artesania-control') . '">Configurar Límites</a>';
+        echo '<div class="artesania-footer-link"><a href="' . admin_url('options-general.php?page=artesania-control&tab=fiscal') . '">Configurar</a></div>';
         echo '</div>';
-        echo '</div>'; // Fin widget
     }
 }

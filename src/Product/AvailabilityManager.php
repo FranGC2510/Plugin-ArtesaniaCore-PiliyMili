@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Artesania\Core\Product;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -8,31 +10,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class AvailabilityManager
  *
- * Gestiona la mensajería de stock y disponibilidad.
- * Adapta el lenguaje técnico de WooCommerce ("Reserva") a la filosofía "Slow Design"
- * ("Fabricación bajo pedido").
+ * Gestiona mensajes de stock (Slow Design) usando textos personalizados de la BD.
  *
  * @package Artesania\Core\Product
+ * @version 2.4.0
  */
 class AvailabilityManager {
 
     public function __construct() {
-        // Filtrar el texto de disponibilidad
         add_filter( 'woocommerce_get_availability_text', [ $this, 'custom_backorder_text' ], 10, 2 );
     }
 
     /**
-     * Filtra y modifica el texto de disponibilidad mostrado al usuario.
+     * Modifica el texto de disponibilidad/reserva.
      *
-     * @param string      $text    Texto original de disponibilidad.
-     * @param \WC_Product $product Objeto del producto.
-     * @return string Texto modificado y localizado.
+     * @param string      $text    Texto original.
+     * @param \WC_Product $product Producto.
+     * @return string Texto sanitizado.
      */
-    public function custom_backorder_text( $text, $product ) {
-        // Verificar si el producto gestiona inventario y admite reservas
+    public function custom_backorder_text( $text, $product ): string {
         if ( $product->managing_stock() && $product->is_on_backorder( 1 ) ) {
-            // Aquí definimos el mensaje "Hecho a mano"
-            $text = __( 'Se fabrica bajo pedido. Producto hecho a mano con mucho amor.', 'artesania-core' );
+            $custom_texts = get_option( 'artesania_custom_texts', [] );
+            $default_msg  = __( 'Se fabrica bajo pedido. Producto hecho a mano con mucho amor.', 'artesania-core' );
+
+            $final_msg = $custom_texts['stock_msg'] ?? $default_msg;
+
+            return esc_html( $final_msg );
         }
 
         return $text;
