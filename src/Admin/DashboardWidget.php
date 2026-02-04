@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class DashboardWidget
  *
  * Widget informativo para el Escritorio de WordPress.
- * Muestra el estado fiscal y respeta la configuración de visibilidad.
+ * Implementación MVC.
  *
  * @package Artesania\Core\Admin
  * @version 2.4.0
@@ -25,14 +25,8 @@ class DashboardWidget {
     }
 
     public function register_widget(): void {
-        if ( ! current_user_can( 'manage_woocommerce' ) ) {
-            return;
-        }
-
-        // Verificar preferencia de visibilidad
-        if ( 'yes' !== get_option( 'artesania_show_dashboard_widget', 'yes' ) ) {
-            return;
-        }
+        if ( ! current_user_can( 'manage_woocommerce' ) ) return;
+        if ( 'yes' !== get_option( 'artesania_show_dashboard_widget', 'yes' ) ) return;
 
         wp_add_dashboard_widget(
             'artesania_sales_dashboard',
@@ -47,60 +41,50 @@ class DashboardWidget {
         $gateways      = \WC()->payment_gateways->get_available_payment_gateways();
         $limits        = get_option( 'artesania_sales_limits', [] );
 
-        echo '<div class="artesania-dashboard-widget">';
+        $rows_data = [];
 
-        // Resumen Global
-        echo '<div class="artesania-summary-box">';
-        echo '<h3 class="artesania-summary-title">TOTAL ' . date('Y') . '</h3>';
-        echo '<p class="artesania-total-amount">' . wc_price( $annual_stats['total'] ) . '</p>';
-        echo '<span class="artesania-total-count">' . esc_html( $annual_stats['count'] ) . ' pedidos</span>';
-        echo '</div>';
-
-        // Tabla de Desglose
-        echo '<table class="artesania-table">';
-        echo '<thead><tr><th>Método</th><th>Actual</th><th>Límite</th><th>Estado</th></tr></thead><tbody>';
-
-        if ( empty( $gateways ) ) {
-            echo '<tr><td colspan="4">Sin métodos activos.</td></tr>';
-        } else {
+        if ( ! empty( $gateways ) ) {
             foreach ( $gateways as $id => $gateway ) {
                 $stats     = $calculator->get_annual_stats( $id );
                 $limit_amt = (float) ( $limits[ $id ]['amount'] ?? 0 );
                 $limit_ord = (int) ( $limits[ $id ]['orders'] ?? 0 );
                 $active    = isset( $limits[ $id ]['active'] ) && 'yes' === $limits[ $id ]['active'];
 
-                // Determinar estado
-                $is_blocked_amt = $limit_amt > 0 && $stats['total'] >= $limit_amt;
-                $is_blocked_ord = $limit_ord > 0 && $stats['count'] >= $limit_ord;
+                $blocked_by_amt = $limit_amt > 0 && $stats['total'] >= $limit_amt;
+                $blocked_by_ord = $limit_ord > 0 && $stats['count'] >= $limit_ord;
 
-                $css_class = 'artesania-status-ok';
-                $status_txt = 'OK';
+                $status_class = 'artesania-status-ok';
+                $status_text  = 'OK';
 
-                if ( $is_blocked_amt || $is_blocked_ord ) {
-                    $css_class = 'artesania-status-error';
-                    $status_txt = 'Límite';
+                if ( $blocked_by_amt || $blocked_by_ord ) {
+                    $status_class = 'artesania-status-error';
+                    $status_text  = 'Límite';
                 } elseif ( ! $active ) {
-                    $css_class = 'artesania-status-info';
-                    $status_txt = 'Info';
+                    $status_class = 'artesania-status-info';
+                    $status_text  = 'Info';
                 }
 
-                // Renderizado fila
-                echo '<tr>';
-                echo '<td><strong>' . esc_html( $gateway->get_title() ) . '</strong></td>';
-                echo '<td>' . wc_price( $stats['total'] ) . '</td>';
-
-                $display_limits = [];
-                if ( $limit_amt > 0 ) $display_limits[] = wc_price( $limit_amt );
-                if ( $limit_ord > 0 ) $display_limits[] = $limit_ord . ' ped.';
-                echo '<td class="artesania-status-info">' . ( empty( $display_limits ) ? '∞' : implode( '<br>', $display_limits ) ) . '</td>';
-
-                echo '<td><span class="' . esc_attr( $css_class ) . '">' . esc_html( $status_txt ) . '</span></td>';
-                echo '</tr>';
+                $rows_data[] = [
+                    'title'          => $gateway->get_title(),
+                    'current_total'  => $stats['total'],
+                    'current_count'  => $stats['count'],
+                    'limit_amt'      => $limit_amt,
+                    'limit_ord'      => $limit_ord,
+                    'status_class'   => $status_class,
+                    'status_text'    => $status_text
+                ];
             }
         }
-        echo '</tbody></table>';
 
-        echo '<div class="artesania-footer-link"><a href="' . admin_url('options-general.php?page=artesania-control&tab=fiscal') . '">Configurar</a></div>';
-        echo '</div>';
+        $this->load_view( 'dashboard-widget', [
+            'annual_stats' => $annual_stats,
+            'rows_data'    => $rows_data
+        ] );
+    }
+
+    private function load_view( string $view_name, array $args = [] ): void {
+        if ( ! empty( $args ) ) extract( $args );
+        $file_path = ARTESANIA_CORE_PATH . 'templates/admin/' . $view_name . '.php';
+        if ( file_exists( $file_path ) ) include $file_path;
     }
 }
