@@ -10,8 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class FrontManager
  *
- * Controlador de Presentación. Gestiona Shortcodes, Hooks y carga de Vistas.
- * Conectado a la configuración dinámica del plugin.
+ * Controlador de Presentación.
+ * Busca las vistas en la carpeta /templates/ usando rutas absolutas constantes.
  *
  * @package Artesania\Core\Front
  * @version 2.4.0
@@ -29,16 +29,24 @@ class FrontManager {
     }
 
     /**
-     * Carga una vista desde /templates/.
+     * Carga una vista desde la carpeta templates/ en la raíz del plugin.
+     *
+     * @param string $view_name Nombre del archivo (sin .php).
+     * @param array  $args      Datos a pasar a la vista.
      */
     private function load_view( string $view_name, array $args = [] ): void {
         if ( ! empty( $args ) ) {
             extract( $args );
         }
-        $file_path = dirname( dirname( __DIR__ ) ) . '/templates/' . $view_name . '.php';
+
+        $file_path = ARTESANIA_CORE_PATH . 'templates/' . $view_name . '.php';
 
         if ( file_exists( $file_path ) ) {
             include $file_path;
+        } else {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( "ArtesaniaCore: No se encuentra la vista $view_name en $file_path" );
+            }
         }
     }
 
@@ -65,9 +73,6 @@ class FrontManager {
         add_action( 'storefront_footer', [ $this, 'render_custom_copyright' ], 20 );
     }
 
-    /**
-     * Prepara el contenido del footer y carga la vista.
-     */
     public function render_custom_copyright(): void {
         $custom_texts   = get_option( 'artesania_custom_texts', [] );
         $default_footer = '&copy; ' . date( 'Y' ) . ' <strong>PiliYMili</strong>';
@@ -82,6 +87,7 @@ class FrontManager {
             $this->load_view( 'shop-header' );
             return;
         }
+
         if ( is_product_category() ) {
             $obj = get_queried_object();
             $children = get_terms( 'product_cat', [ 'parent' => $obj->term_id, 'hide_empty' => false ]);
@@ -97,7 +103,9 @@ class FrontManager {
 
     public function render_offers_section(): string {
         if ( ! function_exists( 'wc_get_product_ids_on_sale' ) ) return '';
-        if ( empty( wc_get_product_ids_on_sale() ) ) return '';
+
+        $sale_ids = wc_get_product_ids_on_sale();
+        if ( empty( $sale_ids ) ) return '';
 
         ob_start();
         $this->load_view( 'section-offers' );

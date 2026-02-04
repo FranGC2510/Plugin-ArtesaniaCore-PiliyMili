@@ -19,6 +19,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// CONSTANTES GLOBALES DE RUTAS
+if ( ! defined( 'ARTESANIA_CORE_PATH' ) ) {
+    define( 'ARTESANIA_CORE_PATH', plugin_dir_path( __FILE__ ) );
+}
+
+if ( ! defined( 'ARTESANIA_CORE_URL' ) ) {
+    define( 'ARTESANIA_CORE_URL', plugin_dir_url( __FILE__ ) );
+}
+
 /**
  * Class Main
  *
@@ -53,7 +62,8 @@ final class Main {
      * Carga las clases PHP requeridas.
      */
     private function load_dependencies(): void {
-        $base_dir = plugin_dir_path( __FILE__ );
+        $base_dir = ARTESANIA_CORE_PATH;
+
         $modules  = [
             'src/Product/Customizer.php',
             'src/Product/AvailabilityManager.php',
