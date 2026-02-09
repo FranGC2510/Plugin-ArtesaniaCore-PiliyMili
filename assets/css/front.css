@@ -1,5 +1,5 @@
 /* Theme Name: Artesania Core Styles
-Version: 2.5.0 (WhatsApp Badge & Fixes)
+Version: 2.5.1 (WhatsApp Badge & Fixes)
 */
 
 /* === 0. IDENTIDAD === */
@@ -329,11 +329,11 @@ margin-bottom: 0 !important;
 /* === 16. WHATSAPP BADGE === */
 .artesania-whatsapp-badge {
     position: fixed;
-    bottom: 25px;
-    right: 25px;
-    width: 60px;
-    height: 60px;
-    background-color: #25d366; /* Verde Oficial */
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #25d366;
     color: #ffffff !important;
     border-radius: 50%;
     display: flex;
@@ -346,22 +346,22 @@ margin-bottom: 0 !important;
 }
 
 .artesania-whatsapp-badge:hover {
-    transform: scale(1.1); /* Efecto zoom al pasar el ratón */
+    transform: scale(1.1);
     background-color: #20bd5a;
     box-shadow: 0 6px 14px rgba(0,0,0,0.4);
 }
 
 .artesania-whatsapp-badge svg {
-    width: 35px;
-    height: 35px;
+    width: 28px;
+    height: 28px;
     fill: #ffffff;
 }
 
-/* Ajuste para móvil para no tapar contenido importante */
+/* Ajuste para móvil (Storefront) */
 @media (max-width: 768px) {
     .artesania-whatsapp-badge {
-        bottom: 80px !important;
-        right: 20px !important;
+        bottom: 12px !important;
+        right: 15px !important;
         width: 50px !important;
         height: 50px !important;
     }
