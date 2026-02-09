@@ -22,6 +22,18 @@ defined( 'ABSPATH' ) || exit;
         </td>
     </tr>
     <tr>
+        <th scope="row">Instagram (URL)</th>
+        <td>
+            <input type="url" name="<?php echo $option_texts; ?>[instagram_url]" value="<?php echo esc_attr( $val_instagram ); ?>" class="regular-text" placeholder="https://instagram.com/...">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">Facebook (URL)</th>
+        <td>
+            <input type="url" name="<?php echo $option_texts; ?>[facebook_url]" value="<?php echo esc_attr( $val_facebook ); ?>" class="regular-text" placeholder="https://facebook.com/...">
+        </td>
+    </tr>
+    <tr>
         <th scope="row">WhatsApp (Móvil)</th>
         <td>
             <input type="text"

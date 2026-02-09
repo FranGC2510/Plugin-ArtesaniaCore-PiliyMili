@@ -12,10 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Panel de Control Principal.
  * Implementación MVC: Separa la lógica de presentación usando vistas en /templates/admin/.
- * Incluye gestión de Módulos, Textos (Stock/Footer/WhatsApp) y Límites Fiscales.
+ * Incluye gestión de Módulos, Textos (Stock/Footer/WhatsApp/Redes) y Límites Fiscales.
  *
  * @package Artesania\Core\Admin
- * @version 2.5.0
+ * @version 2.5.2
  */
 class SettingsPage {
 
@@ -108,7 +108,7 @@ class SettingsPage {
 
     /**
      * Prepara los datos para la pestaña de Textos.
-     * Incluye ahora el campo para el número de WhatsApp.
+     * Incluye WhatsApp, Instagram y Facebook.
      */
     private function render_texts_tab(): void {
         $texts = get_option( self::OPTION_TEXTS, [] );
@@ -116,6 +116,8 @@ class SettingsPage {
             'val_stock'     => $texts['stock_msg'] ?? 'Se fabrica bajo pedido. Producto hecho a mano con mucho amor.',
             'val_footer'    => $texts['footer_text'] ?? '© ' . date('Y') . ' Pili & Mili Detalles',
             'val_whatsapp'  => $texts['whatsapp_number'] ?? '',
+            'val_instagram' => $texts['instagram_url'] ?? '',
+            'val_facebook'  => $texts['facebook_url'] ?? '',
             'option_texts'  => self::OPTION_TEXTS
         ] );
     }
@@ -142,13 +144,15 @@ class SettingsPage {
     }
 
     /**
-     * Sanitiza los textos personalizados, incluyendo el teléfono de WhatsApp.
+     * Sanitiza los textos personalizados y redes sociales.
      */
     public function sanitize_texts( $input ): array {
         return [
             'stock_msg'       => isset($input['stock_msg']) ? sanitize_textarea_field($input['stock_msg']) : '',
             'footer_text'     => isset($input['footer_text']) ? wp_kses_post($input['footer_text']) : '',
-            'whatsapp_number' => isset($input['whatsapp_number']) ? sanitize_text_field($input['whatsapp_number']) : ''
+            'whatsapp_number' => isset($input['whatsapp_number']) ? sanitize_text_field($input['whatsapp_number']) : '',
+            'instagram_url'   => isset($input['instagram_url']) ? esc_url_raw($input['instagram_url']) : '',
+            'facebook_url'    => isset($input['facebook_url']) ? esc_url_raw($input['facebook_url']) : ''
         ];
     }
 }

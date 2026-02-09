@@ -1,5 +1,5 @@
 /* Theme Name: Artesania Core Styles
-Version: 2.5.1 (WhatsApp Badge & Fixes)
+Version: 2.5.2 (WhatsApp Badge & Fixes)
 */
 
 /* === 0. IDENTIDAD === */
@@ -369,4 +369,72 @@ margin-bottom: 0 !important;
         width: 28px !important;
         height: 28px !important;
     }
+}
+
+/* === 17. REDES SOCIALES (Footer y Shortcode) === */
+
+/* 1. Contenedor de iconos */
+.artesania-social-icons {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important; /* En footer centrado */
+    gap: 30px !important;
+    width: 100% !important;
+    margin-bottom: 20px !important;
+}
+
+/* 2. Shortcode [redes_sociales]: Contenedor principal */
+.artesania-social-shortcode {
+    display: flex !important;
+    flex-direction: column !important; /* Título arriba, iconos abajo */
+    align-items: center !important; /* Alineado a la izquierda */
+    gap: 15px !important;
+    margin-bottom: 30px !important;
+}
+
+/* 3. Título del Shortcode */
+h3.artesania-social-title {
+    margin: 0 !important;
+    font-size: 24px !important; /* Tamaño del texto */
+    font-weight: 300 !important;
+    color: #000000 !important;
+    text-transform: none !important;
+    line-height: 1.2 !important;
+}
+
+/* 4. Ajuste de iconos dentro del shortcode (alinear a izquierda) */
+.artesania-social-shortcode .artesania-social-icons {
+    justify-content: center !important;
+    margin-bottom: 0 !important;
+}
+
+/* 5. Diseño del Botón (Círculo) */
+a.artesania-social-link {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+/* 6. Icono SVG */
+a.artesania-social-link svg {
+    width: 20px !important;
+    height: 20px !important;
+    fill: #ffffff !important;
+    display: block !important;
+    margin: 0 !important;
+}
+
+a.artesania-social-link:hover {
+    transform: translateY(-3px) !important;
+    opacity: 0.8 !important;
 }

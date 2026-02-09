@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Artesanía Core (Lógica de Negocio)
  * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout, Personalización y WhatsApp bajo arquitectura MVC.
- * Version: 2.5.1
+ * Version: 2.5.2
  * Author: Fco Javier García Cañero
  * Package: Artesania\Core
  *
@@ -30,7 +30,7 @@ if ( ! defined( 'ARTESANIA_CORE_URL' ) ) {
 
 // Versión Global para Cache Busting
 if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
-    define( 'ARTESANIA_CORE_VERSION', '2.5.1' );
+    define( 'ARTESANIA_CORE_VERSION', '2.5.2' );
 }
 
 /**
@@ -41,7 +41,7 @@ if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
  * Gestiona dependencias, i18n, HPOS y la inicialización de módulos.
  *
  * @package Artesania\Core
- * @version 2.5.1
+ * @version 2.5.2
  */
 final class Main {
 

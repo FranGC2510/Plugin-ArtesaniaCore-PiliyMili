@@ -1,7 +1,7 @@
 <?php
 /**
  * Vista: Footer Copyright
- * @version 2.4.0
+ * @version 2.5.2
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -10,9 +10,15 @@ $texto_final = $footer_content ?? '';
 ?>
 
 <div class="site-info artesania-site-info">
-    <?php echo wp_kses_post( $texto_final ); ?>
+    <?php if ( ! empty( $social_html ) ) : ?>
+        <div class="artesania-footer-socials">
+            <?php echo $social_html; ?>
+        </div>
+    <?php endif; ?>
 
-    <span class="artesania-separator">|</span>
+    <div class="artesania-copyright-text">
+        <?php echo wp_kses_post( $footer_content ); ?>
+    </div>
 
     <a href="/aviso-legal-y-condiciones-de-uso" class="artesania-legal-link">Aviso Legal</a>
     &nbsp;•&nbsp;
