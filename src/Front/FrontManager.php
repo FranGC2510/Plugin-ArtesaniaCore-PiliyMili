@@ -11,10 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Class FrontManager
  *
  * Controlador de Presentación.
- * Busca las vistas en la carpeta /templates/ usando rutas absolutas constantes.
+ * Gestiona footer, cabeceras, shortcodes y el badge flotante de WhatsApp.
  *
  * @package Artesania\Core\Front
- * @version 2.4.0
+ * @version 2.5.0
  */
 class FrontManager {
 
@@ -26,28 +26,13 @@ class FrontManager {
         add_filter( 'woocommerce_product_add_to_cart_text', [ $this, 'simplify_button_text' ] );
         add_action( 'wp', [ $this, 'manage_single_sale_badge' ] );
         add_filter( 'woocommerce_get_price_html', [ $this, 'inject_offer_badge_in_price' ], 10, 2 );
+        add_action( 'wp_footer', [ $this, 'render_whatsapp_badge' ] );
     }
 
-    /**
-     * Carga una vista desde la carpeta templates/ en la raíz del plugin.
-     *
-     * @param string $view_name Nombre del archivo (sin .php).
-     * @param array  $args      Datos a pasar a la vista.
-     */
     private function load_view( string $view_name, array $args = [] ): void {
-        if ( ! empty( $args ) ) {
-            extract( $args );
-        }
-
+        if ( ! empty( $args ) ) extract( $args );
         $file_path = ARTESANIA_CORE_PATH . 'templates/' . $view_name . '.php';
-
-        if ( file_exists( $file_path ) ) {
-            include $file_path;
-        } else {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                error_log( "ArtesaniaCore: No se encuentra la vista $view_name en $file_path" );
-            }
-        }
+        if ( file_exists( $file_path ) ) include $file_path;
     }
 
     public function simplify_button_text( $text ) {
@@ -76,9 +61,7 @@ class FrontManager {
     public function render_custom_copyright(): void {
         $custom_texts   = get_option( 'artesania_custom_texts', [] );
         $default_footer = '&copy; ' . date( 'Y' ) . ' <strong>PiliYMili</strong>';
-
         $footer_content = $custom_texts['footer_text'] ?? $default_footer;
-
         $this->load_view( 'footer-copyright', [ 'footer_content' => $footer_content ] );
     }
 
@@ -103,10 +86,8 @@ class FrontManager {
 
     public function render_offers_section(): string {
         if ( ! function_exists( 'wc_get_product_ids_on_sale' ) ) return '';
-
         $sale_ids = wc_get_product_ids_on_sale();
         if ( empty( $sale_ids ) ) return '';
-
         ob_start();
         $this->load_view( 'section-offers' );
         return ob_get_clean();
@@ -116,5 +97,33 @@ class FrontManager {
         ob_start();
         $this->load_view( 'section-news' );
         return ob_get_clean();
+    }
+
+    /**
+     * Renderiza el botón flotante de WhatsApp.
+     * Genera un mensaje automático si se visita un producto.
+     */
+    public function render_whatsapp_badge(): void {
+        $texts = get_option( 'artesania_custom_texts', [] );
+        $phone = $texts['whatsapp_number'] ?? '';
+
+        if ( empty( $phone ) ) return;
+
+        $message = __( 'Hola, tengo una duda.', 'artesania-core' );
+
+        if ( is_product() ) {
+            global $product;
+            if ( $product ) {
+                $message = sprintf( __( 'Hola, tengo una duda sobre el producto "%s".', 'artesania-core' ), $product->get_name() );
+            }
+        }
+
+        $url = 'https://wa.me/' . esc_attr( $phone ) . '?text=' . urlencode( $message );
+
+        $icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="32px" height="32px"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>';
+
+        echo '<a href="' . esc_url( $url ) . '" class="artesania-whatsapp-badge" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr__( 'Contactar por WhatsApp', 'artesania-core' ) . '">';
+        echo $icon;
+        echo '</a>';
     }
 }

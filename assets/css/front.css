@@ -1,5 +1,5 @@
 /* Theme Name: Artesania Core Styles
-Version: 2.2.0 (Fix: Centrado Mobile Force)
+Version: 2.5.0 (WhatsApp Badge & Fixes)
 */
 
 /* === 0. IDENTIDAD === */
@@ -151,7 +151,7 @@ h2.wp-block-heading { margin-top: 50px !important; }
 .woocommerce-variation-add-to-cart .single_add_to_cart_button {
     flex: 1 1 auto !important;
     width: auto !important; ,,,,,,,,
-    margin-bottom: 0 !important;
+margin-bottom: 0 !important;
 }
 
 /* === 11. ESTADOS DE BOTÓN === */
@@ -325,3 +325,48 @@ h2.wp-block-heading { margin-top: 50px !important; }
     font-size: 12px !important;
 }
 /* La caja del input ya hereda estilos de .artesania-custom-field input definidos arriba */
+
+/* === 16. WHATSAPP BADGE === */
+.artesania-whatsapp-badge {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    background-color: #25d366; /* Verde Oficial */
+    color: #ffffff !important;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 99999;
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+}
+
+.artesania-whatsapp-badge:hover {
+    transform: scale(1.1); /* Efecto zoom al pasar el ratón */
+    background-color: #20bd5a;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+}
+
+.artesania-whatsapp-badge svg {
+    width: 35px;
+    height: 35px;
+    fill: #ffffff;
+}
+
+/* Ajuste para móvil para no tapar contenido importante */
+@media (max-width: 768px) {
+    .artesania-whatsapp-badge {
+        bottom: 80px !important;
+        right: 20px !important;
+        width: 50px !important;
+        height: 50px !important;
+    }
+    .artesania-whatsapp-badge svg {
+        width: 28px !important;
+        height: 28px !important;
+    }
+}

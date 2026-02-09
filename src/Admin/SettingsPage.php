@@ -12,9 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Panel de Control Principal.
  * Implementación MVC: Separa la lógica de presentación usando vistas en /templates/admin/.
+ * Incluye gestión de Módulos, Textos (Stock/Footer/WhatsApp) y Límites Fiscales.
  *
  * @package Artesania\Core\Admin
- * @version 2.4.0
+ * @version 2.5.0
  */
 class SettingsPage {
 
@@ -38,40 +39,34 @@ class SettingsPage {
 
     public function add_admin_menu(): void {
         add_options_page(
-                'Control de Ventas Pili & Mili',
-                'Pili & Mili Control',
-                'manage_woocommerce',
-                'artesania-control',
-                [ $this, 'render_settings_page' ]
+            'Control de Ventas Pili & Mili',
+            'Pili & Mili Control',
+            'manage_woocommerce',
+            'artesania-control',
+            [ $this, 'render_settings_page' ]
         );
     }
 
     public function register_settings(): void {
         register_setting( 'artesania_modules_group', self::OPTION_MODULES, [
-                'type' => 'array', 'sanitize_callback' => [ $this, 'sanitize_modules_security' ]
+            'type' => 'array', 'sanitize_callback' => [ $this, 'sanitize_modules_security' ]
         ] );
         register_setting( 'artesania_modules_group', self::OPTION_DEBUG, [
-                'type' => 'string', 'sanitize_callback' => [ $this, 'sanitize_debug_security' ]
+            'type' => 'string', 'sanitize_callback' => [ $this, 'sanitize_debug_security' ]
         ] );
         register_setting( 'artesania_texts_group', self::OPTION_TEXTS, [
-                'type' => 'array', 'sanitize_callback' => [ $this, 'sanitize_texts' ]
+            'type' => 'array', 'sanitize_callback' => [ $this, 'sanitize_texts' ]
         ] );
         register_setting( 'artesania_limits_group', self::OPTION_LIMITS );
         register_setting( 'artesania_limits_group', self::OPTION_SHOW_WIDGET );
     }
 
-    /**
-     * Carga una vista de administración.
-     */
     private function load_view( string $view_name, array $args = [] ): void {
         if ( ! empty( $args ) ) extract( $args );
         $file_path = ARTESANIA_CORE_PATH . 'templates/admin/' . $view_name . '.php';
         if ( file_exists( $file_path ) ) include $file_path;
     }
 
-    /**
-     * Renderiza el contenedor principal de la página de ajustes.
-     */
     public function render_settings_page(): void {
         if ( ! current_user_can( 'manage_woocommerce' ) ) return;
 
@@ -96,54 +91,64 @@ class SettingsPage {
         $tab_content = ob_get_clean();
 
         $this->load_view( 'settings-wrapper', [
-                'active_tab'  => $active_tab,
-                'tab_content' => $tab_content
+            'active_tab'  => $active_tab,
+            'tab_content' => $tab_content
         ] );
     }
 
     private function render_modules_tab(): void {
         $this->load_view( 'tab-modules', [
-                'options'       => get_option( self::OPTION_MODULES, [] ),
-                'debug_active'  => get_option( self::OPTION_DEBUG, 'no' ),
-                'is_admin'      => current_user_can( 'administrator' ),
-                'option_modules'=> self::OPTION_MODULES,
-                'option_debug'  => self::OPTION_DEBUG
+            'options'       => get_option( self::OPTION_MODULES, [] ),
+            'debug_active'  => get_option( self::OPTION_DEBUG, 'no' ),
+            'is_admin'      => current_user_can( 'administrator' ),
+            'option_modules'=> self::OPTION_MODULES,
+            'option_debug'  => self::OPTION_DEBUG
         ] );
     }
 
+    /**
+     * Prepara los datos para la pestaña de Textos.
+     * Incluye ahora el campo para el número de WhatsApp.
+     */
     private function render_texts_tab(): void {
         $texts = get_option( self::OPTION_TEXTS, [] );
         $this->load_view( 'tab-texts', [
-                'val_stock'     => $texts['stock_msg'] ?? 'Se fabrica bajo pedido. Producto hecho a mano con mucho amor.',
-                'val_footer'    => $texts['footer_text'] ?? '© ' . date('Y') . ' Pili & Mili Detalles',
-                'option_texts'  => self::OPTION_TEXTS
+            'val_stock'     => $texts['stock_msg'] ?? 'Se fabrica bajo pedido. Producto hecho a mano con mucho amor.',
+            'val_footer'    => $texts['footer_text'] ?? '© ' . date('Y') . ' Pili & Mili Detalles',
+            'val_whatsapp'  => $texts['whatsapp_number'] ?? '',
+            'option_texts'  => self::OPTION_TEXTS
         ] );
     }
 
     private function render_fiscal_tab(): void {
         $this->load_view( 'tab-fiscal', [
-                'limits'        => get_option( self::OPTION_LIMITS, [] ),
-                'show_widget'   => get_option( self::OPTION_SHOW_WIDGET, 'yes' ),
-                'gateways'      => \WC()->payment_gateways->get_available_payment_gateways(),
-                'option_limits' => self::OPTION_LIMITS,
-                'option_show'   => self::OPTION_SHOW_WIDGET
+            'limits'        => get_option( self::OPTION_LIMITS, [] ),
+            'show_widget'   => get_option( self::OPTION_SHOW_WIDGET, 'yes' ),
+            'gateways'      => \WC()->payment_gateways->get_available_payment_gateways(),
+            'option_limits' => self::OPTION_LIMITS,
+            'option_show'   => self::OPTION_SHOW_WIDGET
         ] );
     }
 
-    // Callbacks de seguridad
     public function sanitize_modules_security( $input ): array {
         if ( ! current_user_can( 'administrator' ) ) return get_option( self::OPTION_MODULES, [] );
         $clean = [];
         if ( is_array( $input ) ) foreach ( $input as $k => $v ) $clean[ sanitize_key( $k ) ] = '1';
         return $clean;
     }
+
     public function sanitize_debug_security( $input ): string {
         return ( current_user_can( 'administrator' ) && $input === 'yes' ) ? 'yes' : 'no';
     }
+
+    /**
+     * Sanitiza los textos personalizados, incluyendo el teléfono de WhatsApp.
+     */
     public function sanitize_texts( $input ): array {
         return [
-                'stock_msg'   => isset($input['stock_msg']) ? sanitize_textarea_field($input['stock_msg']) : '',
-                'footer_text' => isset($input['footer_text']) ? wp_kses_post($input['footer_text']) : ''
+            'stock_msg'       => isset($input['stock_msg']) ? sanitize_textarea_field($input['stock_msg']) : '',
+            'footer_text'     => isset($input['footer_text']) ? wp_kses_post($input['footer_text']) : '',
+            'whatsapp_number' => isset($input['whatsapp_number']) ? sanitize_text_field($input['whatsapp_number']) : ''
         ];
     }
 }

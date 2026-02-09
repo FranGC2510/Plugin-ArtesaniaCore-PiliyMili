@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Artesanía Core (Lógica de Negocio)
- * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout y Personalización bajo arquitectura MVC.
- * Version: 2.4.1
+ * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout, Personalización y WhatsApp bajo arquitectura MVC.
+ * Version: 2.5.0
  * Author: Fco Javier García Cañero
  * Package: Artesania\Core
  *
@@ -30,7 +30,7 @@ if ( ! defined( 'ARTESANIA_CORE_URL' ) ) {
 
 // Versión Global para Cache Busting
 if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
-    define( 'ARTESANIA_CORE_VERSION', '2.4.1' );
+    define( 'ARTESANIA_CORE_VERSION', '2.5.0' );
 }
 
 /**
@@ -38,10 +38,10 @@ if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
  *
  * Bootstrapper principal del plugin.
  * Implementa patrón Singleton.
- * Gestiona dependencias, i18n y compatibilidad con HPOS.
+ * Gestiona dependencias, i18n, HPOS y la inicialización de módulos.
  *
  * @package Artesania\Core
- * @version 2.4.0
+ * @version 2.5.0
  */
 final class Main {
 
@@ -86,7 +86,6 @@ final class Main {
 
     /**
      * Declara compatibilidad con High Performance Order Storage (HPOS).
-     * Esto evita que WooCommerce marque el plugin como "Legacy".
      */
     public function declare_hpos_compatibility(): void {
         if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
