@@ -1,15 +1,14 @@
 <?php
 defined( 'ABSPATH' ) || exit;
-// Variables recibidas: $options, $debug_active, $is_admin, $option_modules, $option_debug
-
 $disabled = $is_admin ? '' : 'disabled="disabled"';
 $style    = $is_admin ? '' : 'opacity: 0.6; cursor: not-allowed;';
 
 $modules_list = [
-    'checkout'    => [ 'title' => 'Checkout Avanzado', 'desc' => 'Habilita NIF y Facturas.' ],
-    'customizer'  => [ 'title' => 'Personalización', 'desc' => 'Habilita campo de texto en producto.' ],
-    'slow_design' => [ 'title' => 'Slow Design', 'desc' => 'Mensajes de stock personalizados.' ],
-    'frontend'    => [ 'title' => 'Frontend', 'desc' => 'Estilos y Footer personalizados.' ],
+        'checkout'    => [ 'title' => 'Checkout Avanzado', 'desc' => 'Habilita NIF y Facturas.' ],
+        'customizer'  => [ 'title' => 'Personalización', 'desc' => 'Habilita campo de texto en producto.' ],
+        'slow_design' => [ 'title' => 'Slow Design', 'desc' => 'Mensajes de stock personalizados.' ],
+        'frontend'    => [ 'title' => 'Frontend', 'desc' => 'Estilos y Footer personalizados.' ],
+        'catalog_mode'=> [ 'title' => 'Modo Catálogo', 'desc' => 'Oculta botones de compra y carrito. Solo muestra productos.' ],
 ];
 ?>
 <h3>Funcionalidades</h3>

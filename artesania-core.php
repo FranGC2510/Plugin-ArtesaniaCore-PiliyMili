@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Artesanía Core (Lógica de Negocio)
- * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout, Personalización y WhatsApp bajo arquitectura MVC.
- * Version: 2.5.2
+ * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout, Personalización, WhatsApp y Modo Catálogo bajo arquitectura MVC.
+ * Version: 2.6.0
  * Author: Fco Javier García Cañero
  * Package: Artesania\Core
  *
@@ -30,7 +30,7 @@ if ( ! defined( 'ARTESANIA_CORE_URL' ) ) {
 
 // Versión Global para Cache Busting
 if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
-    define( 'ARTESANIA_CORE_VERSION', '2.5.2' );
+    define( 'ARTESANIA_CORE_VERSION', '2.6.0' );
 }
 
 /**
@@ -41,7 +41,7 @@ if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
  * Gestiona dependencias, i18n, HPOS y la inicialización de módulos.
  *
  * @package Artesania\Core
- * @version 2.5.2
+ * @version 2.6.0
  */
 final class Main {
 
@@ -102,6 +102,7 @@ final class Main {
         $modules  = [
             'src/Product/Customizer.php',
             'src/Product/AvailabilityManager.php',
+            'src/Product/CatalogManager.php',
             'src/Checkout/CheckoutManager.php',
             'src/Front/AssetsManager.php',
             'src/Front/FrontManager.php',
@@ -126,19 +127,33 @@ final class Main {
     private function init_modules(): void {
         $active_modules = get_option( 'artesania_active_modules', [] );
 
+        // Verificamos si el Modo Catálogo está activo
+        $is_catalog_mode = ! empty( $active_modules['catalog_mode'] );
+
         // 1. Módulos Condicionales
-        if ( ! empty( $active_modules['customizer'] ) && class_exists( '\Artesania\Core\Product\Customizer' ) ) {
-            new \Artesania\Core\Product\Customizer();
+
+        // MODO CATÁLOGO: Si está activo, cargamos el Manager y BLOQUEAMOS Customizer y Checkout
+        if ( $is_catalog_mode ) {
+            if ( class_exists( '\Artesania\Core\Product\CatalogManager' ) ) {
+                new \Artesania\Core\Product\CatalogManager();
+            }
+        }
+        // Si NO está en modo catálogo, cargamos la tienda normal (Customizer y Checkout)
+        else {
+            if ( ! empty( $active_modules['customizer'] ) && class_exists( '\Artesania\Core\Product\Customizer' ) ) {
+                new \Artesania\Core\Product\Customizer();
+            }
+            if ( ! empty( $active_modules['checkout'] ) && class_exists( '\Artesania\Core\Checkout\CheckoutManager' ) ) {
+                new \Artesania\Core\Checkout\CheckoutManager();
+            }
         }
 
+        // Slow Design (Stock) - Esto lo dejamos activo en ambos modos por si acaso
         if ( ! empty( $active_modules['slow_design'] ) && class_exists( '\Artesania\Core\Product\AvailabilityManager' ) ) {
             new \Artesania\Core\Product\AvailabilityManager();
         }
 
-        if ( ! empty( $active_modules['checkout'] ) && class_exists( '\Artesania\Core\Checkout\CheckoutManager' ) ) {
-            new \Artesania\Core\Checkout\CheckoutManager();
-        }
-
+        // Frontend (Diseño)
         if ( ! empty( $active_modules['frontend'] ) ) {
             if ( class_exists( '\Artesania\Core\Front\AssetsManager' ) ) {
                 new \Artesania\Core\Front\AssetsManager();
@@ -148,7 +163,7 @@ final class Main {
             }
         }
 
-        // 2. Módulos Core
+        // 2. Módulos Core (Siempre activos)
         if ( class_exists( '\Artesania\Core\Sales\SalesLimiter' ) ) {
             new \Artesania\Core\Sales\SalesLimiter();
         }
