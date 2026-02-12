@@ -12,10 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Panel de Control Principal.
  * Implementación MVC: Separa la lógica de presentación usando vistas en /templates/admin/.
- * Incluye gestión de Módulos, Textos (Stock/Footer/WhatsApp/Redes) y Límites Fiscales.
+ * Incluye gestión de Módulos, Textos y el Visor de Logs.
  *
  * @package Artesania\Core\Admin
- * @version 2.5.2
+ * @version 2.6.2
  */
 class SettingsPage {
 
@@ -28,6 +28,7 @@ class SettingsPage {
     public function __construct() {
         add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
+        add_action( 'admin_init', [ $this, 'process_log_viewer' ] ); // Listener del Log
 
         add_filter( 'option_page_capability_artesania_texts_group', [ $this, 'set_group_capability' ] );
         add_filter( 'option_page_capability_artesania_limits_group', [ $this, 'set_group_capability' ] );
@@ -61,6 +62,11 @@ class SettingsPage {
         register_setting( 'artesania_limits_group', self::OPTION_SHOW_WIDGET );
     }
 
+    /**
+     * Helper para cargar vistas HTML separadas de la lógica PHP.
+     * * @param string $view_name Nombre del archivo en templates/admin/ (sin .php)
+     * @param array  $args      Variables a pasar a la vista
+     */
     private function load_view( string $view_name, array $args = [] ): void {
         if ( ! empty( $args ) ) extract( $args );
         $file_path = ARTESANIA_CORE_PATH . 'templates/admin/' . $view_name . '.php';
@@ -96,6 +102,41 @@ class SettingsPage {
         ] );
     }
 
+    /**
+     * Gestiona la visualización y limpieza del log de errores.
+     * Actúa como un mini-controlador interceptando la petición GET.
+     */
+    public function process_log_viewer(): void {
+        if ( ! isset( $_GET['artesania_action'] ) || ! current_user_can( 'administrator' ) ) {
+            return;
+        }
+
+        $log_file = WP_CONTENT_DIR . '/debug.log';
+
+        if ( 'view_log' === $_GET['artesania_action'] ) {
+            $view_data = [
+                'file_exists' => file_exists( $log_file ),
+                'log_content' => file_exists( $log_file ) ? file_get_contents( $log_file ) : ''
+            ];
+
+            $this->load_view('log-viewer-popup', $view_data);
+            exit;
+        }
+
+        if ( 'clear_log' === $_GET['artesania_action'] ) {
+            check_admin_referer( 'artesania_clean_log_nonce' );
+
+            if ( file_exists( $log_file ) ) {
+                file_put_contents( $log_file, '' );
+            }
+
+            wp_safe_redirect( admin_url( 'options-general.php?page=artesania-control&tab=modules&msg=log_cleared' ) );
+            exit;
+        }
+    }
+
+    // Métodos de Renderizado de Tabs
+
     private function render_modules_tab(): void {
         $this->load_view( 'tab-modules', [
             'options'       => get_option( self::OPTION_MODULES, [] ),
@@ -106,10 +147,6 @@ class SettingsPage {
         ] );
     }
 
-    /**
-     * Prepara los datos para la pestaña de Textos.
-     * Incluye WhatsApp, Instagram y Facebook.
-     */
     private function render_texts_tab(): void {
         $texts = get_option( self::OPTION_TEXTS, [] );
         $this->load_view( 'tab-texts', [
@@ -132,6 +169,8 @@ class SettingsPage {
         ] );
     }
 
+    // Callbacks de Sanitización
+
     public function sanitize_modules_security( $input ): array {
         if ( ! current_user_can( 'administrator' ) ) return get_option( self::OPTION_MODULES, [] );
         $clean = [];
@@ -143,9 +182,6 @@ class SettingsPage {
         return ( current_user_can( 'administrator' ) && $input === 'yes' ) ? 'yes' : 'no';
     }
 
-    /**
-     * Sanitiza los textos personalizados y redes sociales.
-     */
     public function sanitize_texts( $input ): array {
         return [
             'stock_msg'       => isset($input['stock_msg']) ? sanitize_textarea_field($input['stock_msg']) : '',

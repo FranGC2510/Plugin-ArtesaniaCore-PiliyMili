@@ -4,7 +4,7 @@
  *
  * @package Artesania\Core
  * @author  Fco Javier García Cañero
- * @version 2.3.0
+ * @version 2.6.2
  */
 
 /* --- WIDGET DEL ESCRITORIO --- */
@@ -134,4 +134,65 @@
 .artesania-settings-table {
     margin-top: 20px;
     max-width: 900px;
+}
+
+/* --- VISOR DE LOGS (POPUP) --- */
+.artesania-log-body {
+    background: #f0f0f1;
+    padding: 20px;
+    font-family: monospace;
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.artesania-log-title {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1d2327;
+}
+
+.artesania-log-textarea {
+    width: 100%;
+    flex-grow: 1; /* Ocupa el espacio restante */
+    padding: 15px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+    line-height: 1.5;
+    background: #fff;
+    color: #333;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
+    resize: none; /* Evitar que rompan el layout */
+}
+
+.artesania-log-success {
+    padding: 20px;
+    background: #fff;
+    border-left: 4px solid #46b450; /* Verde WP */
+    color: #46b450;
+    font-weight: bold;
+}
+
+.artesania-log-warning {
+    padding: 20px;
+    background: #fff;
+    border-left: 4px solid #ffb900; /* Naranja WP */
+    color: #d63638;
+}
+
+.artesania-log-actions {
+    text-align: right;
+    margin-top: 15px;
+}
+
+/* Botón de borrado en pestaña módulos */
+.artesania-btn-danger {
+    margin-left: 10px !important;
+    color: #b32d2e !important;
+    border-color: #b32d2e !important;
+}
+.artesania-btn-danger:hover {
+    background: #b32d2e !important;
+    color: #fff !important;
 }

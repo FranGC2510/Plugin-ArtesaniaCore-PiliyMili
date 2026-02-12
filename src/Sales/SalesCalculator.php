@@ -17,7 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @version 2.4.0
  */
 class SalesCalculator {
-
     /**
      * Duración de la caché en segundos (1 hora por defecto, aunque se limpia por eventos).
      */

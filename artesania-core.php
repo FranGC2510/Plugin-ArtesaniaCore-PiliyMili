@@ -1,8 +1,10 @@
 <?php
 /**
  * Plugin Name: Artesanía Core (Lógica de Negocio)
- * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout, Personalización, WhatsApp y Modo Catálogo bajo arquitectura MVC.
- * Version: 2.6.1
+ * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout, Personalización, Logger y Modo Catálogo bajo arquitectura MVC.
+ * Version: 2.6.2
+ * Tested up to: 6.4.3
+ * Requires PHP: 7.4
  * Author: Fco Javier García Cañero
  * Package: Artesania\Core
  *
@@ -19,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// === CONSTANTES GLOBALES DE RUTAS ===
+// CONSTANTES GLOBALES DE RUTAS
 if ( ! defined( 'ARTESANIA_CORE_PATH' ) ) {
     define( 'ARTESANIA_CORE_PATH', plugin_dir_path( __FILE__ ) );
 }
@@ -30,7 +32,7 @@ if ( ! defined( 'ARTESANIA_CORE_URL' ) ) {
 
 // Versión Global para Cache Busting
 if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
-    define( 'ARTESANIA_CORE_VERSION', '2.6.1' );
+    define( 'ARTESANIA_CORE_VERSION', '2.6.2' );
 }
 
 /**
@@ -41,7 +43,7 @@ if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
  * Gestiona dependencias, i18n, HPOS y la inicialización de módulos.
  *
  * @package Artesania\Core
- * @version 2.6.1
+ * @version 2.6.2
  */
 final class Main {
 
@@ -132,13 +134,11 @@ final class Main {
 
         // 1. Módulos Condicionales
 
-        // MODO CATÁLOGO: Si está activo, cargamos el Manager y BLOQUEAMOS Customizer y Checkout
         if ( $is_catalog_mode ) {
             if ( class_exists( '\Artesania\Core\Product\CatalogManager' ) ) {
                 new \Artesania\Core\Product\CatalogManager();
             }
         }
-        // Si NO está en modo catálogo, cargamos la tienda normal (Customizer y Checkout)
         else {
             if ( ! empty( $active_modules['customizer'] ) && class_exists( '\Artesania\Core\Product\Customizer' ) ) {
                 new \Artesania\Core\Product\Customizer();
@@ -148,7 +148,7 @@ final class Main {
             }
         }
 
-        // Slow Design (Stock) - Esto lo dejamos activo en ambos modos por si acaso
+        // Slow Design
         if ( ! empty( $active_modules['slow_design'] ) && class_exists( '\Artesania\Core\Product\AvailabilityManager' ) ) {
             new \Artesania\Core\Product\AvailabilityManager();
         }
@@ -170,6 +170,22 @@ final class Main {
 
         if ( is_admin() && class_exists( '\Artesania\Core\Admin\AdminManager' ) ) {
             new \Artesania\Core\Admin\AdminManager();
+        }
+    }
+
+    /**
+     * Registra eventos en el log solo si el modo debug está activo.
+     * Uso: \Artesania\Core\Main::log('Mensaje de error', 'ERROR');
+     * * @param string $message Mensaje a registrar
+     * @param string $level   Nivel del error (INFO, WARNING, ERROR)
+     */
+    public static function log( string $message, string $level = 'INFO' ): void {
+        $debug_mode = get_option( 'artesania_debug_mode', 'no' );
+
+        if ( 'yes' === $debug_mode ) {
+            // Formato: [ARTESANIA ERROR] 2024-02-12... Mensaje
+            $entry = sprintf( '[ARTESANIA %s] %s', strtoupper( $level ), $message );
+            error_log( $entry );
         }
     }
 }

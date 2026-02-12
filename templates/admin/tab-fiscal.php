@@ -86,7 +86,8 @@ defined( 'ABSPATH' ) || exit;
                         <input type="checkbox"
                                name="<?php echo esc_attr( $option_limits ); ?>[<?php echo esc_attr( $id ); ?>][active]"
                                value="yes"
-                            <?php checked( $act, true ); ?>>
+                                <?php checked( $act, true ); ?>
+                               onclick="return confirm('¿Confirmas que deseas ' + (this.checked ? 'ACTIVAR' : 'DESACTIVAR') + ' el bloqueo automático para &quot;<?php echo esc_js( $gateway->get_title() ); ?>&quot;?');">
                         Activar Bloqueo
                     </label>
                 </td>
