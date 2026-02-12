@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Gestiona footer, cabeceras, shortcodes y el badge flotante de WhatsApp.
  *
  * @package Artesania\Core\Front
- * @version 2.5.2
+ * @version 2.6.1
  */
 class FrontManager {
 
@@ -28,6 +28,8 @@ class FrontManager {
         add_filter( 'woocommerce_get_price_html', [ $this, 'inject_offer_badge_in_price' ], 10, 2 );
         add_action( 'wp_footer', [ $this, 'render_whatsapp_badge' ] );
         add_shortcode( 'redes_sociales', [ $this, 'render_social_shortcode' ] );
+        add_action( 'wp_head', [ $this, 'permanently_hide_sticky_bar_css' ], 9999 );
+        add_action( 'template_redirect', [ $this, 'remove_sticky_add_to_cart_action' ] );
     }
 
     private function load_view( string $view_name, array $args = [] ): void {
@@ -148,6 +150,32 @@ class FrontManager {
         ob_start();
         $this->load_view( 'section-news' );
         return ob_get_clean();
+    }
+
+    /**
+     * Inyecta CSS de máxima prioridad para asegurar que la barra sticky no se vea nunca.
+     * * @return void
+     */
+    public function permanently_hide_sticky_bar_css(): void {
+        echo '<style id="artesania-core-global-ui-fix">
+            .storefront-sticky-add-to-cart, 
+            #storefront-sticky-add-to-cart,
+            .storefront-sticky-add-to-cart--visible { 
+                display: none !important; 
+                visibility: hidden !important; 
+                transform: none !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+            }
+        </style>';
+    }
+
+    /**
+     * Remueve la acción de Storefront desde el servidor para optimizar la carga.
+     * * @return void
+     */
+    public function remove_sticky_add_to_cart_action(): void {
+        remove_action( 'storefront_after_footer', 'storefront_sticky_add_to_cart', 999 );
     }
 
     /**
