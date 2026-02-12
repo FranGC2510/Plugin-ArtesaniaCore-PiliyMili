@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Usa constantes globales para localizar los scripts.
  *
  * @package Artesania\Core\Checkout
- * @version 2.4.0
+ * @version 2.6.2
  */
 class CheckoutManager {
 
@@ -72,6 +72,7 @@ class CheckoutManager {
      */
     public function validate_conditional_nif() {
         if ( ! empty( $_POST['billing_wants_invoice'] ) && empty( $_POST['billing_nif'] ) ) {
+            \Artesania\Core\Main::log( 'Validación fallida: El cliente solicitó factura pero no envió NIF.', 'WARNING' );
             wc_add_notice( __( 'Has solicitado factura, por favor introduce tu NIF/DNI.', 'artesania-core' ), 'error' );
         }
     }

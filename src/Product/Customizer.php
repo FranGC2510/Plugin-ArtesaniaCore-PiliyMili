@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Implementa seguridad mediante Nonces para evitar ataques CSRF en la configuración.
  *
  * @package Artesania\Core\Product
- * @version 2.4.0
+ * @version 2.6.2
  */
 class Customizer {
 
@@ -58,6 +58,7 @@ class Customizer {
         if ( ! isset( $_POST['artesania_customizer_nonce'] ) ||
             ! wp_verify_nonce( $_POST['artesania_customizer_nonce'], 'artesania_save_customizer_data' )
         ) {
+            \Artesania\Core\Main::log( "Fallo de seguridad (Nonce) al guardar personalización en producto ID: $post_id", 'ERROR' );
             return;
         }
 

@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Gestiona consultas a pedidos con sistema de CACHÉ (Transients) para optimizar rendimiento.
  *
  * @package Artesania\Core\Sales
- * @version 2.4.0
+ * @version 2.6.2
  */
 class SalesCalculator {
     /**
@@ -48,6 +48,10 @@ class SalesCalculator {
         $end_date   = date( 'Y-12-31 23:59:59' );
 
         $stats = $this->query_orders( $start_date, $end_date, $payment_method_id );
+
+        if ( $stats['count'] === 0 && $stats['total'] === 0.0 ) {
+            \Artesania\Core\Main::log( "Cálculo de ventas anuales devolvió 0. ¿Es correcto o hay un fallo en las fechas? ($year)", 'INFO' );
+        }
 
         set_transient( $cache_key, $stats, self::CACHE_EXPIRATION );
 

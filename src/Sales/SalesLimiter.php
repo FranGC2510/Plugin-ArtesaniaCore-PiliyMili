@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Actúa como "Observador" de los pedidos para mantener las estadísticas actualizadas.
  *
  * @package Artesania\Core\Sales
- * @version 2.4.0
+ * @version 2.6.2
  */
 class SalesLimiter {
 
@@ -87,6 +87,13 @@ class SalesLimiter {
             }
 
             if ( $should_block ) {
+                \Artesania\Core\Main::log(
+                    sprintf(
+                        'Pasarela "%s" BLOQUEADA. Acumulado: %.2f€ (Límite: %.2f€) | Pedidos: %d (Límite: %d)',
+                        $id, $stats['total'], $limit_amount, $stats['count'], $limit_orders
+                    ),
+                    'WARNING'
+                );
                 unset( $available_gateways[ $id ] );
             }
         }
