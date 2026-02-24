@@ -2,7 +2,8 @@
 /**
  * Plugin Name: Artesanía Core (Lógica de Negocio)
  * Description: Sistema modular de gestión para Pili & Mili. Incluye Diseño, Stock, Checkout, Personalización, Logger y Modo Catálogo bajo arquitectura MVC.
- * Version: 2.6.2
+ * Version: 2.6.3
+ * Requires at least: 6.0
  * Tested up to: 6.9.1
  * Requires PHP: 7.4
  * Author: Fco Javier García Cañero
@@ -32,7 +33,7 @@ if ( ! defined( 'ARTESANIA_CORE_URL' ) ) {
 
 // Versión Global para Cache Busting
 if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
-    define( 'ARTESANIA_CORE_VERSION', '2.6.2' );
+    define( 'ARTESANIA_CORE_VERSION', '2.6.3' );
 }
 
 /**
@@ -43,7 +44,7 @@ if ( ! defined( 'ARTESANIA_CORE_VERSION' ) ) {
  * Gestiona dependencias, i18n, HPOS y la inicialización de módulos.
  *
  * @package Artesania\Core
- * @version 2.6.2
+ * @version 2.6.3
  */
 final class Main {
 
@@ -134,18 +135,22 @@ final class Main {
 
         // 1. Módulos Condicionales
 
-        if ( $is_catalog_mode ) {
-            if ( class_exists( '\Artesania\Core\Product\CatalogManager' ) ) {
-                new \Artesania\Core\Product\CatalogManager();
-            }
+        if ( $is_catalog_mode && class_exists( '\Artesania\Core\Product\CatalogManager' ) ) {
+            new \Artesania\Core\Product\CatalogManager();
         }
-        else {
-            if ( ! empty( $active_modules['customizer'] ) && class_exists( '\Artesania\Core\Product\Customizer' ) ) {
+
+        // CUSTOMIZER (Personalización de productos)
+        // Lógica: Se carga si está habilitado en base de datos Y (NO estamos en catálogo O estamos en el wp-admin)
+        if ( ! empty( $active_modules['customizer'] ) && class_exists( '\Artesania\Core\Product\Customizer' ) ) {
+            if ( ! $is_catalog_mode || is_admin() ) {
                 new \Artesania\Core\Product\Customizer();
             }
-            if ( ! empty( $active_modules['checkout'] ) && class_exists( '\Artesania\Core\Checkout\CheckoutManager' ) ) {
-                new \Artesania\Core\Checkout\CheckoutManager();
-            }
+        }
+
+        // CHECKOUT (Pago)
+        // Lógica: Solo se carga si no hay modo catálogo activo en absoluto.
+        if ( ! empty( $active_modules['checkout'] ) && ! $is_catalog_mode && class_exists( '\Artesania\Core\Checkout\CheckoutManager' ) ) {
+            new \Artesania\Core\Checkout\CheckoutManager();
         }
 
         // Slow Design
